@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #FF6B35;
+  --color-primary-light: #FF8F5E;
+  --color-primary-dark: #E55A2B;
+  --color-secondary: #4CAF50;
+  --color-secondary-light: #81C784;
+  --color-secondary-dark: #388E3C;
+  --color-accent: #FFB74D;
+  --color-warm-bg: #FFF8F0;
+  --color-warm-card: #FFFFFF;
+  --color-warm-text: #3E2723;
+  --color-warm-muted: #8D6E63;
+  --color-danger: #EF5350;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-warm-bg text-warm-text font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  * {
+    @apply box-border;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white font-semibold py-3 px-6 rounded-2xl
+           hover:bg-primary-dark active:scale-[0.97] transition-all duration-200
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-white font-semibold py-3 px-6 rounded-2xl
+           hover:bg-secondary-dark active:scale-[0.97] transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary font-semibold py-3 px-6 rounded-2xl
+           hover:bg-primary hover:text-white active:scale-[0.97] transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-warm-card rounded-3xl shadow-md p-5;
+  }
+
+  .input-field {
+    @apply w-full py-3 px-4 rounded-2xl border-2 border-gray-200 bg-white
+           focus:border-primary focus:outline-none transition-colors
+           placeholder:text-warm-muted/60;
+  }
+
+  .chip-inactive {
+    @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium
+           border-2 cursor-pointer transition-all duration-200 select-none
+           border-gray-200 bg-white text-warm-muted hover:border-primary/40;
+  }
+
+  .chip-active {
+    @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium
+           border-2 cursor-pointer transition-all duration-200 select-none
+           border-primary bg-primary/10 text-primary;
+  }
+
+  .page-container {
+    @apply min-h-screen pb-24 px-4 pt-4 max-w-lg mx-auto;
+  }
+
+  .nav-item-active {
+    @apply flex flex-col items-center gap-0.5 text-xs font-medium transition-colors text-primary;
+  }
+
+  .nav-item-inactive {
+    @apply flex flex-col items-center gap-0.5 text-xs font-medium transition-colors text-warm-muted;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .section-title {
+    @apply text-lg font-bold text-warm-text;
+  }
+}

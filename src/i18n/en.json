@@ -1,0 +1,195 @@
+{
+  "common": {
+    "appName": "Rucola",
+    "loading": "Just a moment...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "next": "Next",
+    "back": "Back",
+    "close": "Close",
+    "confirm": "Confirm",
+    "search": "Search",
+    "noResults": "No results found"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Sign up",
+    "name": "Your name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot your password?",
+    "resetPassword": "Reset password",
+    "loginTitle": "Welcome back to the kitchen!",
+    "registerTitle": "Create your account",
+    "loginSubtitle": "Your sous-chef has been waiting for you",
+    "registerSubtitle": "Let's start cooking together!",
+    "orContinueWith": "or continue with",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "resetSent": "We've sent you an email to reset your password",
+    "passwordMismatch": "Passwords don't match",
+    "weakPassword": "Password must be at least 8 characters",
+    "emailInUse": "This email is already registered"
+  },
+  "onboarding": {
+    "welcome": "Hi, I'm Rucola!",
+    "welcomeSubtitle": "Your personal sous-chef. I'll help you plan your weekly meals in a simple and delicious way.",
+    "dietTitle": "What's your diet?",
+    "dietSubtitle": "Tell me your eating style so I know what to suggest",
+    "diet": {
+      "omnivore": "Omnivore",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan"
+    },
+    "allergiesTitle": "Any allergies or intolerances?",
+    "allergiesSubtitle": "Select everything I should avoid",
+    "allergy": {
+      "gluten": "Gluten",
+      "lactose": "Lactose",
+      "nuts": "Tree nuts",
+      "shellfish": "Shellfish",
+      "eggs": "Eggs",
+      "soy": "Soy"
+    },
+    "preferencesTitle": "Any extra preferences?",
+    "preferencesSubtitle": "Customize your meals just the way you like",
+    "pref": {
+      "noSpicy": "No spicy food",
+      "noRawFish": "No raw fish",
+      "largePortion": "Large portions",
+      "smallPortion": "Light portions",
+      "quick": "Quick recipes (under 20 min)",
+      "budgetFriendly": "Budget-friendly meals"
+    },
+    "mealsTitle": "How many meals do you want to plan?",
+    "mealsSubtitle": "Choose how many meals per week you'd like me to suggest",
+    "mealsPerWeek": "meals per week",
+    "calendarTitle": "Connect your calendar",
+    "calendarSubtitle": "So I can suggest quick recipes when you're short on time",
+    "calendarConnect": "Connect Google Calendar",
+    "calendarSkip": "Maybe later",
+    "complete": "All set, chef!",
+    "completeSubtitle": "I've got everything I need. Let's get cooking!"
+  },
+  "dashboard": {
+    "greeting": "Hey {{name}}, what are we cooking?",
+    "greetingEvening": "Good evening {{name}}, what's for dinner?",
+    "lunchTitle": "Lunch",
+    "dinnerTitle": "Dinner",
+    "dinnerAvailable": "Dinner suggestion ready",
+    "whatToday": "What do you feel like today?",
+    "basedOnYesterday": "You had {{meal}} yesterday, let's switch it up!",
+    "suggestionTitle": "Chef's pick",
+    "tryThis": "Try this!",
+    "regenerate": "New suggestion",
+    "addToCalendar": "Add to calendar",
+    "noFridge": "Your fridge is empty! Add some ingredients to get started",
+    "souschefSays": "Your sous-chef says...",
+    "greetingMorning": "Good morning {{name}}! What shall we make?",
+    "souschefTip1": "A balanced meal keeps your energy up all afternoon!",
+    "souschefTip2": "Try switching up your protein sources throughout the week.",
+    "souschefTip3": "Remember to update your fridge when you buy groceries!",
+    "souschefTip4": "Legumes are a great protein source, even for meat eaters."
+  },
+  "fridge": {
+    "title": "Your fridge",
+    "subtitle": "Tell me what you have and I'll tell you what to cook",
+    "categories": {
+      "base": "Base",
+      "vegetable": "Vegetables",
+      "protein": "Protein"
+    },
+    "addCustom": "Add ingredient",
+    "customPlaceholder": "E.g. mozzarella, basil...",
+    "empty": "Your fridge is empty! Start adding ingredients",
+    "clearAll": "Clear all",
+    "popularBase": {
+      "pasta": "Pasta",
+      "rice": "Rice",
+      "bread": "Bread",
+      "couscous": "Couscous",
+      "quinoa": "Quinoa",
+      "potatoes": "Potatoes"
+    },
+    "popularVegetable": {
+      "tomatoes": "Tomatoes",
+      "zucchini": "Zucchini",
+      "spinach": "Spinach",
+      "peppers": "Peppers",
+      "carrots": "Carrots",
+      "broccoli": "Broccoli",
+      "lettuce": "Lettuce",
+      "onions": "Onions"
+    },
+    "popularProtein": {
+      "chicken": "Chicken",
+      "beef": "Beef",
+      "salmon": "Salmon",
+      "eggs": "Eggs",
+      "tofu": "Tofu",
+      "legumes": "Legumes",
+      "tuna": "Tuna",
+      "cheese": "Cheese"
+    }
+  },
+  "recipes": {
+    "title": "Recipes",
+    "ingredients": "Ingredients",
+    "steps": "Steps",
+    "prepTime": "Prep time",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Challenging"
+    },
+    "portions": "Portions",
+    "balanced": "Balanced meal",
+    "base": "Base",
+    "vegetable": "Vegetable",
+    "protein": "Protein",
+    "viewRecipe": "View recipe",
+    "cooking": "Cooking",
+    "favorites": "Favorites",
+    "noFavorites": "You haven't saved any favorite recipes yet"
+  },
+  "history": {
+    "title": "Your meals",
+    "subtitle": "Here's what you've eaten recently",
+    "noMeals": "No meals logged yet. Let's start cooking!",
+    "mealDetails": "Meal details",
+    "lunch": "Lunch",
+    "dinner": "Dinner"
+  },
+  "feedback": {
+    "title": "How was it?",
+    "subtitle": "Your feedback helps me get to know you better",
+    "rateYesterday": "How was {{meal}}?",
+    "rating": "Rating",
+    "comment": "Any comments?",
+    "commentPlaceholder": "E.g. Too salty, perfect portion, would make again...",
+    "submit": "Submit",
+    "skip": "Skip",
+    "thankYou": "Thanks! I'll keep that in mind for future suggestions"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "googleCalendar": "Google Calendar",
+    "connected": "Connected",
+    "notConnected": "Not connected",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "editProfile": "Edit profile",
+    "dietPreferences": "Diet preferences",
+    "logout": "Log out",
+    "deleteAccount": "Delete account"
+  },
+  "nav": {
+    "home": "Home",
+    "fridge": "Fridge",
+    "history": "History",
+    "settings": "Settings"
+  }
+}

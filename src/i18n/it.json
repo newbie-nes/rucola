@@ -1,0 +1,195 @@
+{
+  "common": {
+    "appName": "Rucola",
+    "loading": "Un attimo...",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "next": "Avanti",
+    "back": "Indietro",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "search": "Cerca",
+    "noResults": "Nessun risultato trovato"
+  },
+  "auth": {
+    "login": "Accedi",
+    "register": "Registrati",
+    "name": "Il tuo nome",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Conferma password",
+    "forgotPassword": "Hai dimenticato la password?",
+    "resetPassword": "Reimposta password",
+    "loginTitle": "Bentornato in cucina!",
+    "registerTitle": "Crea il tuo account",
+    "loginSubtitle": "Il tuo sous-chef ti stava aspettando",
+    "registerSubtitle": "Iniziamo a cucinare insieme!",
+    "orContinueWith": "oppure continua con",
+    "noAccount": "Non hai un account?",
+    "hasAccount": "Hai gi\u00e0 un account?",
+    "resetSent": "Ti abbiamo inviato un'email per reimpostare la password",
+    "passwordMismatch": "Le password non coincidono",
+    "weakPassword": "La password deve avere almeno 8 caratteri",
+    "emailInUse": "Questa email \u00e8 gi\u00e0 registrata"
+  },
+  "onboarding": {
+    "welcome": "Ciao, sono Rucola!",
+    "welcomeSubtitle": "Il tuo sous-chef personale. Ti aiuter\u00f2 a pianificare i pasti della settimana in modo semplice e gustoso.",
+    "dietTitle": "Come mangi?",
+    "dietSubtitle": "Dimmi il tuo stile alimentare, cos\u00ec so cosa proporti",
+    "diet": {
+      "omnivore": "Onnivoro",
+      "vegetarian": "Vegetariano",
+      "vegan": "Vegano"
+    },
+    "allergiesTitle": "Hai allergie o intolleranze?",
+    "allergiesSubtitle": "Seleziona tutto ci\u00f2 che devo evitare",
+    "allergy": {
+      "gluten": "Glutine",
+      "lactose": "Lattosio",
+      "nuts": "Frutta a guscio",
+      "shellfish": "Crostacei",
+      "eggs": "Uova",
+      "soy": "Soia"
+    },
+    "preferencesTitle": "Qualche preferenza in pi\u00f9?",
+    "preferencesSubtitle": "Personalizza i tuoi pasti come vuoi tu",
+    "pref": {
+      "noSpicy": "Niente piccante",
+      "noRawFish": "Niente pesce crudo",
+      "largePortion": "Porzioni abbondanti",
+      "smallPortion": "Porzioni leggere",
+      "quick": "Ricette veloci (max 20 min)",
+      "budgetFriendly": "Risparmio in cucina"
+    },
+    "mealsTitle": "Quanti pasti vuoi pianificare?",
+    "mealsSubtitle": "Scegli quanti pasti a settimana vuoi che ti suggerisca",
+    "mealsPerWeek": "pasti a settimana",
+    "calendarTitle": "Collega il tuo calendario",
+    "calendarSubtitle": "Cos\u00ec posso suggerirti ricette veloci quando hai poco tempo",
+    "calendarConnect": "Collega Google Calendar",
+    "calendarSkip": "Magari dopo",
+    "complete": "Tutto pronto, chef!",
+    "completeSubtitle": "Ho tutto quello che mi serve. Iniziamo a cucinare!"
+  },
+  "dashboard": {
+    "greeting": "Ciao {{name}}, cosa cuciniamo?",
+    "greetingEvening": "Buonasera {{name}}, che si mangia stasera?",
+    "lunchTitle": "Pranzo",
+    "dinnerTitle": "Cena",
+    "dinnerAvailable": "Proposta per cena disponibile",
+    "whatToday": "Cosa ti va oggi?",
+    "basedOnYesterday": "Ieri hai mangiato {{meal}}, oggi cambiamo un po'!",
+    "suggestionTitle": "Il consiglio dello chef",
+    "tryThis": "Prova questo!",
+    "regenerate": "Cambia proposta",
+    "addToCalendar": "Aggiungi al calendario",
+    "noFridge": "Il tuo frigo \u00e8 vuoto! Aggiungi qualche ingrediente per iniziare",
+    "souschefSays": "Il tuo sous-chef dice...",
+    "greetingMorning": "Buongiorno {{name}}! Cosa prepariamo?",
+    "souschefTip1": "Un piatto bilanciato ti tiene carico tutto il pomeriggio!",
+    "souschefTip2": "Prova a variare le proteine durante la settimana.",
+    "souschefTip3": "Ricordati di aggiungere al frigo quello che compri!",
+    "souschefTip4": "I legumi sono un'ottima proteina, anche per chi mangia carne."
+  },
+  "fridge": {
+    "title": "Il tuo frigo",
+    "subtitle": "Dimmi cosa hai in casa e ti dico cosa cucinare",
+    "categories": {
+      "base": "Base",
+      "vegetable": "Verdure",
+      "protein": "Proteine"
+    },
+    "addCustom": "Aggiungi ingrediente",
+    "customPlaceholder": "Es. mozzarella, basilico...",
+    "empty": "Il frigo \u00e8 vuoto! Inizia ad aggiungere ingredienti",
+    "clearAll": "Svuota tutto",
+    "popularBase": {
+      "pasta": "Pasta",
+      "rice": "Riso",
+      "bread": "Pane",
+      "couscous": "Couscous",
+      "quinoa": "Quinoa",
+      "potatoes": "Patate"
+    },
+    "popularVegetable": {
+      "tomatoes": "Pomodori",
+      "zucchini": "Zucchine",
+      "spinach": "Spinaci",
+      "peppers": "Peperoni",
+      "carrots": "Carote",
+      "broccoli": "Broccoli",
+      "lettuce": "Lattuga",
+      "onions": "Cipolle"
+    },
+    "popularProtein": {
+      "chicken": "Pollo",
+      "beef": "Manzo",
+      "salmon": "Salmone",
+      "eggs": "Uova",
+      "tofu": "Tofu",
+      "legumes": "Legumi",
+      "tuna": "Tonno",
+      "cheese": "Formaggio"
+    }
+  },
+  "recipes": {
+    "title": "Ricette",
+    "ingredients": "Ingredienti",
+    "steps": "Procedimento",
+    "prepTime": "Tempo di preparazione",
+    "difficulty": {
+      "easy": "Facile",
+      "medium": "Media",
+      "hard": "Impegnativa"
+    },
+    "portions": "Porzioni",
+    "balanced": "Piatto bilanciato",
+    "base": "Base",
+    "vegetable": "Verdura",
+    "protein": "Proteina",
+    "viewRecipe": "Vedi ricetta",
+    "cooking": "In preparazione",
+    "favorites": "Preferiti",
+    "noFavorites": "Non hai ancora salvato nessuna ricetta tra i preferiti"
+  },
+  "history": {
+    "title": "I tuoi pasti",
+    "subtitle": "Ecco cosa hai mangiato di recente",
+    "noMeals": "Nessun pasto registrato ancora. Inizia a cucinare!",
+    "mealDetails": "Dettagli del pasto",
+    "lunch": "Pranzo",
+    "dinner": "Cena"
+  },
+  "feedback": {
+    "title": "Com'\u00e8 andato?",
+    "subtitle": "Il tuo feedback mi aiuta a conoscerti meglio",
+    "rateYesterday": "Come ti \u00e8 sembrato {{meal}}?",
+    "rating": "Voto",
+    "comment": "Un commento?",
+    "commentPlaceholder": "Es. Troppo salato, porzione perfetta, lo rifarei...",
+    "submit": "Invia",
+    "skip": "Salta",
+    "thankYou": "Grazie! Ne terr\u00f2 conto per le prossime proposte"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "notifications": "Notifiche",
+    "googleCalendar": "Google Calendar",
+    "connected": "Collegato",
+    "notConnected": "Non collegato",
+    "connect": "Collega",
+    "disconnect": "Scollega",
+    "editProfile": "Modifica profilo",
+    "dietPreferences": "Preferenze alimentari",
+    "logout": "Esci",
+    "deleteAccount": "Elimina account"
+  },
+  "nav": {
+    "home": "Home",
+    "fridge": "Frigo",
+    "history": "Storico",
+    "settings": "Impostazioni"
+  }
+}
