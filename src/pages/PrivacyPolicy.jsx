@@ -21,8 +21,8 @@ export default function PrivacyPolicy() {
             </p>
             <p>
               Per qualsiasi richiesta relativa ai tuoi dati personali, puoi contattarmi all'indirizzo email:{' '}
-              <a href="mailto:ernesto.alberghina@gmail.com" className="text-primary underline">
-                ernesto.alberghina@gmail.com
+              <a href="mailto:alberghinaernesto@gmail.com" className="text-primary underline">
+                alberghinaernesto@gmail.com
               </a>
             </p>
           </section>
@@ -83,8 +83,8 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-5 space-y-1">
               <li>Utilizzando il pulsante <strong>"Elimina account"</strong> nella pagina Impostazioni dell'app</li>
               <li>Inviando un'email a{' '}
-                <a href="mailto:ernesto.alberghina@gmail.com" className="text-primary underline">
-                  ernesto.alberghina@gmail.com
+                <a href="mailto:alberghinaernesto@gmail.com" className="text-primary underline">
+                  alberghinaernesto@gmail.com
                 </a>
               </li>
             </ul>

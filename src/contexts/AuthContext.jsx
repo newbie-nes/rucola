@@ -18,12 +18,48 @@ function saveUsers(users) {
   localStorage.setItem('rucola_users', JSON.stringify(users))
 }
 
+async function seedAdminAccount() {
+  const users = getUsers()
+  const adminEmail = 'alberghinaernesto@gmail.com'
+  if (users[adminEmail]) return // already exists
+
+  const uid = 'admin_ernesto'
+  const now = new Date().toISOString()
+  users[adminEmail] = {
+    password: 'rucola2026',
+    user: { uid, email: adminEmail, displayName: 'Ernesto' },
+    profile: {
+      displayName: 'Ernesto',
+      email: adminEmail,
+      createdAt: now,
+      gdprConsentedAt: now,
+      onboardingComplete: false
+    }
+  }
+  saveUsers(users)
+
+  // Also save to Firestore
+  try {
+    await setDoc(doc(db, 'users', uid), {
+      displayName: 'Ernesto',
+      email: adminEmail,
+      createdAt: serverTimestamp(),
+      gdprConsentedAt: now
+    })
+  } catch (e) {
+    console.warn('Firestore admin seed failed (offline?):', e)
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Seed admin account so it exists on every browser/device
+    seedAdminAccount()
+
     const stored = localStorage.getItem('rucola_current_user')
     if (stored) {
       const parsed = JSON.parse(stored)
