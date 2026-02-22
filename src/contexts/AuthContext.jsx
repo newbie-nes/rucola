@@ -21,10 +21,18 @@ function saveUsers(users) {
 async function seedAdminAccount() {
   const users = getUsers()
   const adminEmail = 'alberghinaernesto@gmail.com'
-  if (users[adminEmail]) return // already exists
-
   const uid = 'admin_ernesto'
   const now = new Date().toISOString()
+
+  if (users[adminEmail]) {
+    // Account exists → force correct password and uid
+    users[adminEmail].password = 'rucola2026'
+    users[adminEmail].user.uid = uid
+    saveUsers(users)
+    return
+  }
+
+  // Account doesn't exist → create from scratch
   users[adminEmail] = {
     password: 'rucola2026',
     user: { uid, email: adminEmail, displayName: 'Ernesto' },
