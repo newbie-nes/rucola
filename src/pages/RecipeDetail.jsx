@@ -2,13 +2,30 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import recipes from '../data/recipes'
-import { ArrowLeft, Clock, Flame, Users, Check, CalendarPlus, Zap } from 'lucide-react'
+import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin } from 'lucide-react'
+import { matchesKeyIngredient, ingredientsMatch } from '../utils/ingredientMatch'
+
+const FOOD_EMOJIS = {
+  pasta: '🍝', rice: '🍚', bread: '🍞', couscous: '🫓', quinoa: '🌾', potatoes: '🥔',
+  tomatoes: '🍅', zucchini: '🥒', spinach: '🥬', peppers: '🫑', carrots: '🥕',
+  broccoli: '🥦', lettuce: '🥗', onions: '🧅',
+  chicken: '🍗', beef: '🥩', salmon: '🐟', eggs: '🥚', tofu: '🧈',
+  legumes: '🫘', tuna: '🐠', cheese: '🧀'
+}
+
+const PANTRY_KEYWORDS = ['sale', 'salt', 'olio', 'oil', 'pepe', 'pepper', 'acqua', 'water', 'aglio', 'garlic', 'zucchero', 'sugar']
+
+const HERO_GRADIENTS = {
+  easy: 'from-emerald-400 via-green-500 to-teal-600',
+  medium: 'from-amber-400 via-orange-500 to-yellow-600',
+  hard: 'from-rose-400 via-red-500 to-pink-600'
+}
 
 export default function RecipeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
-  const { user } = useAuth()
+  const { userProfile } = useAuth()
   const lang = i18n.language?.startsWith('it') ? 'it' : 'en'
 
   const recipe = recipes.find(r => r.id === Number(id))
@@ -22,16 +39,81 @@ export default function RecipeDetail() {
     )
   }
 
-  async function addToCalendar() {
+  // Fridge match on key ingredients (base/vegetable/protein)
+  const fridge = userProfile?.fridge || { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+  const fridgeItems = [...(fridge.base || []), ...(fridge.vegetable || []), ...(fridge.protein || []), ...(fridge.spice || []), ...(fridge.altro || [])]
+  const normalizedFridge = fridgeItems.map(item => item.toLowerCase())
+
+  const keyIngredients = [
+    { type: 'base', key: recipe.base },
+    { type: 'vegetable', key: recipe.vegetable },
+    { type: 'protein', key: recipe.protein }
+  ]
+
+  const inFridge = []
+  const missing = []
+  keyIngredients.forEach(({ key }) => {
+    if (normalizedFridge.some(fi => matchesKeyIngredient(fi, key))) {
+      inFridge.push(key)
+    } else {
+      missing.push(key)
+    }
+  })
+
+  // Build alias map: for each key ingredient, collect all names to match against
+  // e.g. "chicken" → ["chicken", "pollo"] so "petto di pollo" will match
+  const keyAliases = keyIngredients.map(({ type, key }) => {
+    const aliases = [key.toLowerCase()]
+    // Add localized name from translations
+    const localizedName = t(`fridge.items.${key}`, { defaultValue: '' })
+    if (localizedName) aliases.push(localizedName.toLowerCase())
+    // Add english name too if we're in Italian
+    if (lang === 'it') {
+      const enName = key.toLowerCase()
+      if (!aliases.includes(enName)) aliases.push(enName)
+    }
+    return { type, key, aliases, status: inFridge.includes(key) ? 'inFridge' : 'missing' }
+  })
+
+  // Build alias map for ALL fridge items (not just key ingredients) to handle spices + extras
+  const allFridgeAliases = fridgeItems.map(item => {
+    const aliases = [item.toLowerCase()]
+    const localizedName = t(`fridge.items.${item}`, { defaultValue: '' })
+    if (localizedName && !aliases.includes(localizedName.toLowerCase())) {
+      aliases.push(localizedName.toLowerCase())
+    }
+    return aliases
+  })
+
+  function getIngredientStatus(ingredientText) {
+    const lower = ingredientText.toLowerCase()
+    // Check pantry staples first
+    if (PANTRY_KEYWORDS.some(kw => lower.includes(kw))) return 'pantry'
+    // Check against key ingredient aliases (base/vegetable/protein)
+    for (const { aliases, status } of keyAliases) {
+      if (aliases.some(alias => lower.includes(alias))) return status
+    }
+    // Check against ALL fridge items with aliases (catches spices like basil→basilico)
+    if (allFridgeAliases.some(aliases => aliases.some(alias => lower.includes(alias)))) return 'inFridge'
+    // Fuzzy match against fridge items using ingredientMatch utility
+    if (fridgeItems.some(fi => ingredientsMatch(fi, ingredientText))) return 'inFridge'
+    return 'pantry'
+  }
+
+  // Classify all ingredients, keeping original order
+  const classifiedIngredients = recipe.allIngredients[lang].map(ing => ({
+    text: ing,
+    status: getIngredientStatus(ing)
+  }))
+
+  function addToCalendar() {
     const today = new Date().toISOString().split('T')[0]
     const hour = new Date().getHours()
     const mealType = hour >= 19 ? 'dinner' : 'lunch'
 
-    // Save to localStorage for feedback check
     localStorage.setItem('rucola_last_meal', String(recipe.id))
     localStorage.setItem('rucola_last_meal_name', recipe.name[lang])
 
-    // Save to local history
     const history = JSON.parse(localStorage.getItem('rucola_meal_history') || '{}')
     history[today] = {
       recipeId: recipe.id,
@@ -40,44 +122,83 @@ export default function RecipeDetail() {
       type: mealType
     }
     localStorage.setItem('rucola_meal_history', JSON.stringify(history))
-
     navigate('/')
   }
 
+  const heroGradient = HERO_GRADIENTS[recipe.difficulty] || HERO_GRADIENTS.easy
+
   return (
     <div className="min-h-screen bg-warm-bg">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary/10 to-accent/20 px-4 pt-4 pb-8">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-primary font-medium mb-4">
-          <ArrowLeft size={18} /> {t('common.back')}
-        </button>
-        <div className="text-center">
-          <div className="text-6xl mb-3">{recipe.emoji}</div>
-          <h1 className="text-2xl font-bold">{recipe.name[lang]}</h1>
-          <p className="text-warm-muted mt-1">{recipe.description[lang]}</p>
+
+      {/* ========== HERO ========== */}
+      <div className={`relative bg-gradient-to-br ${heroGradient} px-4 pt-4 pb-16 overflow-hidden`}>
+        <div className="absolute top-[-40px] right-[-40px] w-40 h-40 bg-white/10 rounded-full" />
+        <div className="absolute bottom-[-20px] left-[-30px] w-32 h-32 bg-white/10 rounded-full" />
+        <div className="absolute top-[30%] left-[10%] w-20 h-20 bg-white/5 rounded-full" />
+
+        <div className="relative z-10 flex items-start justify-between mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1.5 text-white/90 font-medium bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm"
+          >
+            <ArrowLeft size={16} /> {t('common.back')}
+          </button>
+          <div className="w-16 h-16 bg-white rounded-full shadow-lg flex flex-col items-center justify-center">
+            <span className="text-xl font-black text-warm-text leading-none">{recipe.prepTime}</span>
+            <span className="text-[9px] font-semibold text-warm-muted uppercase tracking-wide">min</span>
+          </div>
         </div>
-        <div className="flex justify-center gap-4 mt-4">
-          <span className="badge bg-white shadow-sm">
-            <Clock size={14} className="mr-1" /> {recipe.prepTime} min
-          </span>
-          <span className="badge bg-white shadow-sm">
-            <Flame size={14} className="mr-1" /> {t(`recipes.difficulty.${recipe.difficulty}`)}
-          </span>
-          <span className="badge bg-white shadow-sm">
-            <Users size={14} className="mr-1" /> {recipe.portions} {t('recipes.portions')}
-          </span>
+
+        <div className="relative z-10 text-center">
+          <div className="text-[100px] leading-none mb-3" style={{ filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.15))' }}>
+            {recipe.emoji}
+          </div>
+          <h1 className="text-2xl font-extrabold text-white drop-shadow-md">{recipe.name[lang]}</h1>
+          <p className="text-white/80 text-sm mt-1 max-w-xs mx-auto">{recipe.description[lang]}</p>
+          <div className="flex justify-center gap-3 mt-4 flex-wrap">
+            <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+              <Flame size={12} /> {t(`recipes.difficulty.${recipe.difficulty}`)}
+            </span>
+            <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+              1 {t('recipes.portions')}
+            </span>
+            {recipe.tags?.includes('lunchbox') && (
+              <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+                🍱 {t('dashboard.lunchboxFilter')}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="px-4 -mt-4 max-w-lg mx-auto pb-8">
+      {/* ========== BODY ========== */}
+      <div className="px-4 -mt-8 max-w-lg mx-auto pb-8 relative z-10">
+
         {/* Balance indicator */}
-        <div className="card mb-4 flex items-center gap-3">
-          <div className="flex gap-2">
-            <span className="badge bg-amber-100 text-amber-700">🍚 {t('recipes.base')}</span>
-            <span className="badge bg-green-100 text-green-700">🥬 {t('recipes.vegetable')}</span>
-            <span className="badge bg-red-100 text-red-700">🥩 {t('recipes.protein')}</span>
-          </div>
-          <Check className="text-secondary ml-auto" size={20} />
+        <div className="card mb-4 flex items-center gap-2 flex-wrap">
+          {keyIngredients.map(({ type, key }) => {
+            const isIn = inFridge.includes(key)
+            return (
+              <span
+                key={type}
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${
+                  isIn
+                    ? 'bg-green-50 text-green-700 border-green-300'
+                    : 'bg-orange-50 text-orange-600 border-orange-300'
+                }`}
+              >
+                {FOOD_EMOJIS[key] || '🍽️'} {t(`recipes.${type}`)}
+                <span className={`font-bold text-sm ${isIn ? 'text-green-600' : 'text-orange-500'}`}>
+                  {isIn ? '✓' : '✗'}
+                </span>
+              </span>
+            )
+          })}
+          {missing.length === 0 && (
+            <span className="ml-auto text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+              ✓ {t('shopping.inFridge')}
+            </span>
+          )}
         </div>
 
         {/* Macronutrients */}
@@ -107,35 +228,110 @@ export default function RecipeDetail() {
           </div>
         )}
 
-        {/* Ingredients */}
+        {/* ========== INGREDIENTS (original order, with ✓/✗) ========== */}
         <div className="card mb-4">
-          <h2 className="section-title mb-3">{t('recipes.ingredients')}</h2>
-          <ul className="space-y-2">
-            {recipe.allIngredients[lang].map((ing, i) => (
-              <li key={i} className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                {ing}
-              </li>
-            ))}
-          </ul>
-        </div>
+          <h2 className="section-title mb-4">{t('recipes.ingredients')}</h2>
+          <div className="space-y-2">
+            {classifiedIngredients.map((ing, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
+                  ing.status === 'inFridge'
+                    ? 'bg-green-50 border-green-200'
+                    : ing.status === 'missing'
+                    ? 'bg-orange-50 border-orange-200'
+                    : 'bg-gray-50 border-gray-100'
+                }`}
+              >
+                {/* ✓ / ✗ / dot */}
+                {ing.status === 'inFridge' && (
+                  <span className="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold shrink-0">✓</span>
+                )}
+                {ing.status === 'missing' && (
+                  <span className="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm font-bold shrink-0">✗</span>
+                )}
+                {ing.status === 'pantry' && (
+                  <span className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-gray-400" />
+                  </span>
+                )}
 
-        {/* Steps */}
-        <div className="card mb-6">
-          <h2 className="section-title mb-3">{t('recipes.steps')}</h2>
-          <ol className="space-y-4">
-            {recipe.steps[lang].map((step, i) => (
-              <li key={i} className="flex gap-3">
-                <span className="w-7 h-7 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-bold shrink-0">
-                  {i + 1}
+                {/* Ingredient text */}
+                <span className={`text-sm flex-1 ${
+                  ing.status === 'missing' ? 'text-orange-800 font-semibold' :
+                  ing.status === 'inFridge' ? 'text-green-800' : 'text-warm-muted'
+                }`}>
+                  {ing.text}
                 </span>
-                <p className="text-sm text-warm-text pt-1">{step}</p>
-              </li>
+
+                {/* Status label */}
+                {ing.status === 'inFridge' && (
+                  <span className="text-[11px] font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">{t('shopping.inFridge')}</span>
+                )}
+                {ing.status === 'missing' && (
+                  <span className="text-[11px] font-semibold text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full">{t('shopping.toBuy')}</span>
+                )}
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
 
-        {/* Add to calendar button */}
+        {/* ========== SHOPPING CARD ========== */}
+        {missing.length > 0 && (
+          <div className="card mb-4 border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50">
+            <h2 className="section-title mb-3 flex items-center gap-2 text-orange-700">
+              <span className="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">✗</span>
+              {t('shopping.missingTitle')}
+            </h2>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {missing.map(key => (
+                <span
+                  key={key}
+                  className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-semibold"
+                >
+                  {FOOD_EMOJIS[key] || '🍽️'} {t(`fridge.items.${key}`, key)}
+                </span>
+              ))}
+            </div>
+            <a
+              href="https://www.google.com/maps/search/supermarket/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-2xl transition-all active:scale-[0.97]"
+            >
+              <MapPin size={18} /> {t('shopping.findSupermarket')}
+            </a>
+            <p className="text-[10px] text-orange-400 text-center mt-2">{t('shopping.mapsHint')}</p>
+          </div>
+        )}
+
+        {/* ========== STEPS (TIMELINE) ========== */}
+        <div className="card mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="section-title">{t('recipes.steps')}</h2>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+              <Clock size={12} /> {recipe.prepTime} min
+            </span>
+          </div>
+
+          <div className="relative">
+            <div className="absolute left-[18px] top-5 bottom-5 w-0.5 bg-gradient-to-b from-primary/30 via-primary/20 to-primary/5 rounded-full" />
+            <div className="space-y-1">
+              {recipe.steps[lang].map((step, i) => (
+                <div key={i} className="relative flex gap-4 py-3">
+                  <div className="relative z-10 w-9 h-9 bg-gradient-to-br from-primary to-primary-dark text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0 shadow-md">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 bg-warm-bg rounded-2xl px-4 py-3 border border-gray-100">
+                    <p className="text-sm text-warm-text leading-relaxed">{step}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ========== ADD TO CALENDAR ========== */}
         <button onClick={addToCalendar} className="btn-primary w-full flex items-center justify-center gap-2">
           <CalendarPlus size={20} /> {t('dashboard.addToCalendar')}
         </button>

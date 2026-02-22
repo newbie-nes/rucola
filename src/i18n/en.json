@@ -92,7 +92,10 @@
     "souschefTip3": "Remember to update your fridge when you buy groceries!",
     "souschefTip4": "Legumes are a great protein source, even for meat eaters.",
     "yesterdayAte": "You had {{meal}} yesterday — let's switch it up!",
-    "fridgeFirst": "Prioritizing your fridge ingredients"
+    "fridgeFirst": "Prioritizing your fridge ingredients",
+    "lunchboxFilter": "Lunchbox",
+    "lunchboxHint": "Portable recipes for work",
+    "allRecipes": "All"
   },
   "fridge": {
     "title": "Your fridge",
@@ -100,10 +103,13 @@
     "categories": {
       "base": "Base",
       "vegetable": "Vegetables",
-      "protein": "Protein"
+      "protein": "Protein",
+      "spice": "Spices",
+      "altro": "Other"
     },
     "addCustom": "Add ingredient",
     "customPlaceholder": "E.g. mozzarella, basil...",
+    "smartPlaceholder": "Type an ingredient...",
     "empty": "Your fridge is empty! Start adding ingredients",
     "clearAll": "Clear all",
     "items": {
@@ -128,7 +134,21 @@
       "tofu": "Tofu",
       "legumes": "Legumes",
       "tuna": "Tuna",
-      "cheese": "Cheese"
+      "cheese": "Cheese",
+      "basil": "Basil",
+      "parsley": "Parsley",
+      "rosemary": "Rosemary",
+      "oregano": "Oregano",
+      "cumin": "Cumin",
+      "paprika": "Paprika",
+      "chili": "Chili flakes",
+      "ginger": "Ginger",
+      "curry": "Curry",
+      "mint": "Mint",
+      "thyme": "Thyme",
+      "soy_sauce": "Soy sauce",
+      "lemon": "Lemon",
+      "sesame_oil": "Sesame oil"
     },
     "popularBase": {
       "pasta": "Pasta",
@@ -157,6 +177,22 @@
       "legumes": "Legumes",
       "tuna": "Tuna",
       "cheese": "Cheese"
+    },
+    "popularSpice": {
+      "basil": "Basil",
+      "parsley": "Parsley",
+      "rosemary": "Rosemary",
+      "oregano": "Oregano",
+      "cumin": "Cumin",
+      "paprika": "Paprika",
+      "chili": "Chili flakes",
+      "ginger": "Ginger",
+      "curry": "Curry",
+      "mint": "Mint",
+      "thyme": "Thyme",
+      "soy_sauce": "Soy sauce",
+      "lemon": "Lemon",
+      "sesame_oil": "Sesame oil"
     }
   },
   "recipes": {
@@ -169,7 +205,7 @@
       "medium": "Medium",
       "hard": "Challenging"
     },
-    "portions": "Portions",
+    "portions": "Portion",
     "balanced": "Balanced meal",
     "nutrition": "Nutrition facts",
     "kcal": "kcal",
@@ -218,6 +254,15 @@
     "dietPreferences": "Diet preferences",
     "logout": "Log out",
     "deleteAccount": "Delete account"
+  },
+  "shopping": {
+    "missingTitle": "Ingredients to buy",
+    "findSupermarket": "Find nearby supermarket",
+    "mapsHint": "Opens Google Maps with supermarkets near you",
+    "itemsNeeded": "{{count}} ingredient to buy",
+    "itemsNeeded_plural": "{{count}} ingredients to buy",
+    "inFridge": "In fridge",
+    "toBuy": "Need to buy"
   },
   "nav": {
     "home": "Home",

@@ -12,9 +12,10 @@ i18n
     fallbackLng: 'it',
     interpolation: { escapeValue: false },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       caches: ['localStorage']
-    }
+    },
+    lng: localStorage.getItem('i18nextLng') || 'it'
   })
 
 export default i18n

@@ -92,7 +92,10 @@
     "souschefTip3": "Ricordati di aggiungere al frigo quello che compri!",
     "souschefTip4": "I legumi sono un'ottima proteina, anche per chi mangia carne.",
     "yesterdayAte": "Ieri hai mangiato {{meal}} — oggi variamo!",
-    "fridgeFirst": "Priorità agli ingredienti nel tuo frigo"
+    "fridgeFirst": "Priorità agli ingredienti nel tuo frigo",
+    "lunchboxFilter": "Pranzo al sacco",
+    "lunchboxHint": "Ricette portabili per il lavoro",
+    "allRecipes": "Tutte"
   },
   "fridge": {
     "title": "Il tuo frigo",
@@ -100,10 +103,13 @@
     "categories": {
       "base": "Base",
       "vegetable": "Verdure",
-      "protein": "Proteine"
+      "protein": "Proteine",
+      "spice": "Spezie",
+      "altro": "Altro"
     },
     "addCustom": "Aggiungi ingrediente",
     "customPlaceholder": "Es. mozzarella, basilico...",
+    "smartPlaceholder": "Scrivi un ingrediente...",
     "empty": "Il frigo \u00e8 vuoto! Inizia ad aggiungere ingredienti",
     "clearAll": "Svuota tutto",
     "items": {
@@ -128,7 +134,21 @@
       "tofu": "Tofu",
       "legumes": "Legumi",
       "tuna": "Tonno",
-      "cheese": "Formaggio"
+      "cheese": "Formaggio",
+      "basil": "Basilico",
+      "parsley": "Prezzemolo",
+      "rosemary": "Rosmarino",
+      "oregano": "Origano",
+      "cumin": "Cumino",
+      "paprika": "Paprika",
+      "chili": "Peperoncino",
+      "ginger": "Zenzero",
+      "curry": "Curry",
+      "mint": "Menta",
+      "thyme": "Timo",
+      "soy_sauce": "Salsa di soia",
+      "lemon": "Limone",
+      "sesame_oil": "Olio di sesamo"
     },
     "popularBase": {
       "pasta": "Pasta",
@@ -157,6 +177,22 @@
       "legumes": "Legumi",
       "tuna": "Tonno",
       "cheese": "Formaggio"
+    },
+    "popularSpice": {
+      "basil": "Basilico",
+      "parsley": "Prezzemolo",
+      "rosemary": "Rosmarino",
+      "oregano": "Origano",
+      "cumin": "Cumino",
+      "paprika": "Paprika",
+      "chili": "Peperoncino",
+      "ginger": "Zenzero",
+      "curry": "Curry",
+      "mint": "Menta",
+      "thyme": "Timo",
+      "soy_sauce": "Salsa di soia",
+      "lemon": "Limone",
+      "sesame_oil": "Olio di sesamo"
     }
   },
   "recipes": {
@@ -169,7 +205,7 @@
       "medium": "Media",
       "hard": "Impegnativa"
     },
-    "portions": "Porzioni",
+    "portions": "Porzione",
     "balanced": "Piatto bilanciato",
     "nutrition": "Valori nutrizionali",
     "kcal": "kcal",
@@ -218,6 +254,15 @@
     "dietPreferences": "Preferenze alimentari",
     "logout": "Esci",
     "deleteAccount": "Elimina account"
+  },
+  "shopping": {
+    "missingTitle": "Ingredienti da comprare",
+    "findSupermarket": "Trova supermercato vicino",
+    "mapsHint": "Si apre Google Maps con i supermercati vicini a te",
+    "itemsNeeded": "{{count}} ingrediente da comprare",
+    "itemsNeeded_plural": "{{count}} ingredienti da comprare",
+    "inFridge": "In frigo",
+    "toBuy": "Da comprare"
   },
   "nav": {
     "home": "Home",

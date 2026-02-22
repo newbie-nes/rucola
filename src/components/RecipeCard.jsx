@@ -76,6 +76,14 @@ export default function RecipeCard({ recipe }) {
             })}
           </div>
 
+          {/* Missing items count */}
+          {fridgeMatch?.missing?.length > 0 && (
+            <p className="text-[10px] text-orange-500 mt-1 flex items-center gap-1">
+              <ShoppingCart size={10} />
+              {t(fridgeMatch.missing.length === 1 ? 'shopping.itemsNeeded' : 'shopping.itemsNeeded_plural', { count: fridgeMatch.missing.length })}
+            </p>
+          )}
+
           {/* Macronutrients */}
           {nutrition && (
             <div className="flex gap-3 mt-2 text-[10px] text-warm-muted">

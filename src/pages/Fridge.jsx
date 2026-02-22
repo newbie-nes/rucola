@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { Plus, X, Trash2, Search } from 'lucide-react'
+import { autoCategorize } from '../utils/autoCategorize'
 
 const POPULAR = {
   base: ['pasta', 'rice', 'bread', 'couscous', 'quinoa', 'potatoes'],
   vegetable: ['tomatoes', 'zucchini', 'spinach', 'peppers', 'carrots', 'broccoli', 'lettuce', 'onions'],
-  protein: ['chicken', 'beef', 'salmon', 'eggs', 'tofu', 'legumes', 'tuna', 'cheese']
+  protein: ['chicken', 'beef', 'salmon', 'eggs', 'tofu', 'legumes', 'tuna', 'cheese'],
+  spice: ['basil', 'parsley', 'rosemary', 'oregano', 'cumin', 'paprika', 'chili', 'ginger', 'curry', 'mint', 'thyme', 'soy_sauce', 'lemon', 'sesame_oil']
 }
 
 const FOOD_EMOJIS = {
@@ -14,24 +16,30 @@ const FOOD_EMOJIS = {
   tomatoes: '🍅', zucchini: '🥒', spinach: '🥬', peppers: '🫑', carrots: '🥕',
   broccoli: '🥦', lettuce: '🥗', onions: '🧅',
   chicken: '🍗', beef: '🥩', salmon: '🐟', eggs: '🥚', tofu: '🧈',
-  legumes: '🫘', tuna: '🐠', cheese: '🧀'
+  legumes: '🫘', tuna: '🐠', cheese: '🧀',
+  basil: '🌿', parsley: '🌿', rosemary: '🌿', oregano: '🌿', cumin: '🫙',
+  paprika: '🌶️', chili: '🌶️', ginger: '🫚', curry: '🍛', mint: '🍃',
+  thyme: '🌿', soy_sauce: '🥢', lemon: '🍋', sesame_oil: '🫗'
 }
 
-const CAT_EMOJIS = { base: '🍚', vegetable: '🥬', protein: '🥩' }
+const CATEGORIES = ['base', 'vegetable', 'protein', 'spice', 'altro']
+const CAT_EMOJIS = { base: '🍚', vegetable: '🥬', protein: '🥩', spice: '🌿', altro: '📦' }
 const CAT_COLORS = {
   base: { bg: 'bg-amber-50', border: 'border-amber-200', active: 'bg-amber-100 border-amber-400 text-amber-800' },
   vegetable: { bg: 'bg-green-50', border: 'border-green-200', active: 'bg-green-100 border-green-400 text-green-800' },
-  protein: { bg: 'bg-red-50', border: 'border-red-200', active: 'bg-red-100 border-red-400 text-red-800' }
+  protein: { bg: 'bg-red-50', border: 'border-red-200', active: 'bg-red-100 border-red-400 text-red-800' },
+  spice: { bg: 'bg-purple-50', border: 'border-purple-200', active: 'bg-purple-100 border-purple-400 text-purple-800' },
+  altro: { bg: 'bg-gray-50', border: 'border-gray-200', active: 'bg-gray-200 border-gray-400 text-gray-800' }
 }
 
 export default function Fridge() {
   const { t } = useTranslation()
   const { userProfile, updateUserProfile } = useAuth()
-  const [customInput, setCustomInput] = useState('')
+  const [smartInput, setSmartInput] = useState('')
   const [activeCategory, setActiveCategory] = useState('base')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const fridge = userProfile?.fridge || { base: [], vegetable: [], protein: [] }
+  const fridge = userProfile?.fridge || { base: [], vegetable: [], protein: [], spice: [], altro: [] }
 
   function toggleIngredient(category, item) {
     const current = fridge[category] || []
@@ -41,27 +49,34 @@ export default function Fridge() {
     updateUserProfile({ fridge: { ...fridge, [category]: updated } })
   }
 
-  function addCustom() {
-    const item = customInput.trim().toLowerCase()
+  function addSmart() {
+    const item = smartInput.trim().toLowerCase()
     if (!item) return
-    const current = fridge[activeCategory] || []
+    const category = autoCategorize(item)
+    const current = fridge[category] || []
     if (!current.includes(item)) {
       updateUserProfile({
-        fridge: { ...fridge, [activeCategory]: [...current, item] }
+        fridge: { ...fridge, [category]: [...current, item] }
       })
     }
-    setCustomInput('')
+    setSmartInput('')
   }
 
   function clearAll() {
-    updateUserProfile({ fridge: { base: [], vegetable: [], protein: [] } })
+    updateUserProfile({ fridge: { base: [], vegetable: [], protein: [], spice: [], altro: [] } })
   }
 
-  const totalItems = (fridge.base?.length || 0) + (fridge.vegetable?.length || 0) + (fridge.protein?.length || 0)
+  const totalItems = CATEGORIES.reduce((sum, cat) => sum + (fridge[cat]?.length || 0), 0)
 
-  const filteredPopular = searchQuery
-    ? POPULAR[activeCategory].filter(i => i.includes(searchQuery.toLowerCase()))
-    : POPULAR[activeCategory]
+  const filteredPopular = POPULAR[activeCategory]
+    ? (searchQuery
+        ? POPULAR[activeCategory].filter(i => {
+            const localName = t(`fridge.items.${i}`, i).toLowerCase()
+            const q = searchQuery.toLowerCase()
+            return i.includes(q) || localName.includes(q)
+          })
+        : POPULAR[activeCategory])
+    : []
 
   return (
     <div className="page-container">
@@ -77,13 +92,28 @@ export default function Fridge() {
         )}
       </div>
 
-      {/* Category tabs */}
+      {/* Smart input — primary method */}
       <div className="flex gap-2 mb-6">
-        {(['base', 'vegetable', 'protein']).map(cat => (
+        <input
+          type="text"
+          className="input-field flex-1 text-base"
+          placeholder={t('fridge.smartPlaceholder')}
+          value={smartInput}
+          onChange={e => setSmartInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && addSmart()}
+        />
+        <button onClick={addSmart} className="btn-primary px-4">
+          <Plus size={20} />
+        </button>
+      </div>
+
+      {/* Category tabs */}
+      <div className="grid grid-cols-5 gap-1.5 mb-6">
+        {CATEGORIES.map(cat => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`flex-1 py-3 px-3 rounded-2xl text-center font-semibold text-sm transition-all border-2 ${
+            className={`py-3 px-1 rounded-2xl text-center font-semibold text-xs transition-all border-2 ${
               activeCategory === cat
                 ? CAT_COLORS[cat].active
                 : `bg-white ${CAT_COLORS[cat].border}`
@@ -92,62 +122,51 @@ export default function Fridge() {
             <span className="text-lg block mb-0.5">{CAT_EMOJIS[cat]}</span>
             {t(`fridge.categories.${cat}`)}
             {(fridge[cat]?.length || 0) > 0 && (
-              <span className="ml-1 text-xs opacity-70">({fridge[cat].length})</span>
+              <span className="ml-1 text-[10px] opacity-70">({fridge[cat].length})</span>
             )}
           </button>
         ))}
       </div>
 
-      {/* Search */}
-      <div className="relative mb-4">
-        <Search className="absolute left-4 top-3 text-warm-muted" size={18} />
-        <input
-          type="text"
-          className="input-field pl-11"
-          placeholder={t('common.search')}
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-        />
-      </div>
+      {/* Search (only for categories with presets) */}
+      {POPULAR[activeCategory] && (
+        <>
+          <div className="relative mb-4">
+            <Search className="absolute left-4 top-3 text-warm-muted" size={18} />
+            <input
+              type="text"
+              className="input-field pl-11"
+              placeholder={t('common.search')}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-      {/* Popular ingredients */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {filteredPopular.map(item => {
-          const isActive = (fridge[activeCategory] || []).includes(item)
-          return (
-            <button
-              key={item}
-              onClick={() => toggleIngredient(activeCategory, item)}
-              className={isActive ? 'chip-active' : 'chip-inactive'}
-            >
-              {isActive && <span className="text-xs">✓</span>}
-              {FOOD_EMOJIS[item] && <span>{FOOD_EMOJIS[item]}</span>}
-              {t(`fridge.items.${item}`, item)}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Custom ingredient */}
-      <div className="flex gap-2 mb-8">
-        <input
-          type="text"
-          className="input-field flex-1"
-          placeholder={t('fridge.customPlaceholder')}
-          value={customInput}
-          onChange={e => setCustomInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && addCustom()}
-        />
-        <button onClick={addCustom} className="btn-primary px-4">
-          <Plus size={20} />
-        </button>
-      </div>
+          {/* Popular ingredients */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {filteredPopular.map(item => {
+              const isActive = (fridge[activeCategory] || []).includes(item)
+              return (
+                <button
+                  key={item}
+                  onClick={() => toggleIngredient(activeCategory, item)}
+                  className={isActive ? 'chip-active' : 'chip-inactive'}
+                >
+                  {isActive && <span className="text-xs">✓</span>}
+                  {FOOD_EMOJIS[item] && <span>{FOOD_EMOJIS[item]}</span>}
+                  {t(`fridge.items.${item}`, item)}
+                </button>
+              )
+            })}
+          </div>
+        </>
+      )}
 
       {/* Current fridge summary */}
       {totalItems > 0 && (
         <div className="card">
           <h3 className="font-bold mb-3">{t('fridge.title')} ({totalItems})</h3>
-          {(['base', 'vegetable', 'protein']).map(cat => (
+          {CATEGORIES.map(cat => (
             (fridge[cat]?.length || 0) > 0 && (
               <div key={cat} className="mb-3 last:mb-0">
                 <p className="text-xs font-semibold text-warm-muted uppercase mb-1">
