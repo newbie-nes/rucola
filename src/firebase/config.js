@@ -3,12 +3,13 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'demo-key',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'demo.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'demo-project',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || ''
+  apiKey: "AIzaSyBhcXght_qCEH57zpybrmaglEdDbfNozqs",
+  authDomain: "rucola-34b39.firebaseapp.com",
+  projectId: "rucola-34b39",
+  storageBucket: "rucola-34b39.firebasestorage.app",
+  messagingSenderId: "819928353252",
+  appId: "1:819928353252:web:c859dedabfb706054f5ff1",
+  measurementId: "G-9VQ0V55L8L"
 }
 
 const app = initializeApp(firebaseConfig)

@@ -13,12 +13,12 @@ export default function Admin() {
   useEffect(() => {
     async function loadData() {
       try {
-        // Load users
+        // Load users from Firestore
         const usersSnap = await getDocs(collection(db, 'users'))
         const usersData = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }))
         setUsers(usersData)
 
-        // Load feedbacks (ordered by createdAt desc)
+        // Load feedbacks from Firestore (ordered by createdAt desc)
         const feedbacksQuery = query(collection(db, 'feedbacks'), orderBy('createdAt', 'desc'))
         const feedbacksSnap = await getDocs(feedbacksQuery)
         const feedbacksData = feedbacksSnap.docs.map(d => ({ id: d.id, ...d.data() }))
@@ -153,7 +153,9 @@ export default function Admin() {
                     <p className="font-semibold text-sm truncate">{u.displayName || 'Senza nome'}</p>
                     <p className="text-xs text-warm-muted truncate">{u.email}</p>
                   </div>
-                  <p className="text-xs text-warm-muted shrink-0">{formatDate(u.createdAt)}</p>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs text-warm-muted">{formatDate(u.createdAt)}</p>
+                  </div>
                 </div>
               ))
             )}

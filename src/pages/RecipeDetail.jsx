@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { db } from '../firebase/config'
 import recipes from '../data/recipes'
-import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin } from 'lucide-react'
+import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin, Star, Send } from 'lucide-react'
 import { matchesKeyIngredient, ingredientsMatch } from '../utils/ingredientMatch'
 
 const FOOD_EMOJIS = {
@@ -25,8 +28,13 @@ export default function RecipeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
-  const { userProfile } = useAuth()
+  const { user, userProfile } = useAuth()
   const lang = i18n.language?.startsWith('it') ? 'it' : 'en'
+
+  const [fbRating, setFbRating] = useState(0)
+  const [fbHovered, setFbHovered] = useState(0)
+  const [fbComment, setFbComment] = useState('')
+  const [fbSubmitted, setFbSubmitted] = useState(false)
 
   const recipe = recipes.find(r => r.id === Number(id))
   if (!recipe) {
@@ -123,6 +131,25 @@ export default function RecipeDetail() {
     }
     localStorage.setItem('rucola_meal_history', JSON.stringify(history))
     navigate('/')
+  }
+
+  async function submitRecipeFeedback() {
+    if (fbRating === 0) return
+    try {
+      await addDoc(collection(db, 'feedbacks'), {
+        userId: user?.uid || 'unknown',
+        userName: user?.displayName || 'Unknown',
+        userEmail: user?.email || '',
+        mealId: String(recipe.id),
+        mealName: recipe.name[lang],
+        rating: fbRating,
+        comment: fbComment,
+        createdAt: serverTimestamp()
+      })
+    } catch (e) {
+      console.warn('Firestore feedback save failed:', e)
+    }
+    setFbSubmitted(true)
   }
 
   const heroGradient = HERO_GRADIENTS[recipe.difficulty] || HERO_GRADIENTS.easy
@@ -332,9 +359,57 @@ export default function RecipeDetail() {
         </div>
 
         {/* ========== ADD TO CALENDAR ========== */}
-        <button onClick={addToCalendar} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button onClick={addToCalendar} className="btn-primary w-full flex items-center justify-center gap-2 mb-6">
           <CalendarPlus size={20} /> {t('dashboard.addToCalendar')}
         </button>
+
+        {/* ========== FEEDBACK ========== */}
+        <div className="card">
+          <h2 className="section-title mb-3">{lang === 'it' ? 'Com\'era questa ricetta?' : 'How was this recipe?'}</h2>
+          {fbSubmitted ? (
+            <div className="text-center py-4">
+              <div className="text-4xl mb-2">🎉</div>
+              <p className="text-sm font-semibold text-green-600">{t('feedback.thankYou')}</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-center gap-2 mb-3">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <button
+                    key={n}
+                    onMouseEnter={() => setFbHovered(n)}
+                    onMouseLeave={() => setFbHovered(0)}
+                    onClick={() => setFbRating(n)}
+                    className="transition-transform hover:scale-110"
+                  >
+                    <Star
+                      size={32}
+                      fill={n <= (fbHovered || fbRating) ? '#FFB74D' : 'none'}
+                      stroke={n <= (fbHovered || fbRating) ? '#FFB74D' : '#D1D5DB'}
+                      strokeWidth={1.5}
+                    />
+                  </button>
+                ))}
+              </div>
+              {fbRating > 0 && (
+                <>
+                  <textarea
+                    className="input-field resize-none h-16 mb-3 text-sm"
+                    placeholder={t('feedback.commentPlaceholder')}
+                    value={fbComment}
+                    onChange={e => setFbComment(e.target.value)}
+                  />
+                  <button
+                    onClick={submitRecipeFeedback}
+                    className="btn-primary w-full flex items-center justify-center gap-2"
+                  >
+                    <Send size={16} /> {t('feedback.submit')}
+                  </button>
+                </>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

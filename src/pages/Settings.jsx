@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { db } from '../firebase/config'
 import {
-  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, Trash2, Shield
+  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, Trash2, Shield, MessageCircle, Send, Star
 } from 'lucide-react'
 
 export default function Settings() {
@@ -11,6 +13,32 @@ export default function Settings() {
   const { user, userProfile, logout, deleteAccount } = useAuth()
   const navigate = useNavigate()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [appRating, setAppRating] = useState(0)
+  const [appHovered, setAppHovered] = useState(0)
+  const [appComment, setAppComment] = useState('')
+  const [appFbSubmitted, setAppFbSubmitted] = useState(false)
+  const lang = i18n.language?.startsWith('it') ? 'it' : 'en'
+
+  async function submitAppFeedback() {
+    if (appRating === 0 && !appComment.trim()) return
+    try {
+      await addDoc(collection(db, 'feedbacks'), {
+        type: 'app_feedback',
+        userId: user?.uid || 'unknown',
+        userName: user?.displayName || 'Unknown',
+        userEmail: user?.email || '',
+        mealId: 'app',
+        mealName: lang === 'it' ? 'Feedback App' : 'App Feedback',
+        rating: appRating,
+        comment: appComment,
+        createdAt: serverTimestamp()
+      })
+    } catch (e) {
+      console.warn('Firestore app feedback save failed:', e)
+    }
+    setAppFbSubmitted(true)
+  }
 
   function toggleLanguage() {
     const newLang = i18n.language?.startsWith('it') ? 'en' : 'it'
@@ -95,6 +123,67 @@ export default function Settings() {
         </div>
         <ChevronRight size={18} className="text-warm-muted" />
       </Link>
+
+      {/* App Feedback */}
+      <button
+        onClick={() => setShowFeedback(!showFeedback)}
+        className="w-full mt-2 card flex items-center gap-3 text-left py-4"
+      >
+        <div className="text-primary"><MessageCircle size={20} /></div>
+        <div className="flex-1">
+          <p className="font-medium">{lang === 'it' ? 'Lascia un feedback' : 'Leave feedback'}</p>
+          <p className="text-sm text-warm-muted">{lang === 'it' ? 'Aiutaci a migliorare Rucola' : 'Help us improve Rucola'}</p>
+        </div>
+        <ChevronRight size={18} className={`text-warm-muted transition-transform ${showFeedback ? 'rotate-90' : ''}`} />
+      </button>
+
+      {showFeedback && (
+        <div className="card mt-2">
+          {appFbSubmitted ? (
+            <div className="text-center py-4">
+              <div className="text-4xl mb-2">🎉</div>
+              <p className="text-sm font-semibold text-green-600">{t('feedback.thankYou')}</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-warm-muted mb-3">
+                {lang === 'it' ? 'Come ti trovi con l\'app? Suggerimenti, bug, idee?' : 'How\'s the app? Suggestions, bugs, ideas?'}
+              </p>
+              <div className="flex justify-center gap-2 mb-3">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <button
+                    key={n}
+                    onMouseEnter={() => setAppHovered(n)}
+                    onMouseLeave={() => setAppHovered(0)}
+                    onClick={() => setAppRating(n)}
+                    className="transition-transform hover:scale-110"
+                  >
+                    <Star
+                      size={28}
+                      fill={n <= (appHovered || appRating) ? '#FFB74D' : 'none'}
+                      stroke={n <= (appHovered || appRating) ? '#FFB74D' : '#D1D5DB'}
+                      strokeWidth={1.5}
+                    />
+                  </button>
+                ))}
+              </div>
+              <textarea
+                className="input-field resize-none h-20 mb-3 text-sm"
+                placeholder={lang === 'it' ? 'Scrivi qui il tuo feedback...' : 'Write your feedback here...'}
+                value={appComment}
+                onChange={e => setAppComment(e.target.value)}
+              />
+              <button
+                onClick={submitAppFeedback}
+                disabled={appRating === 0 && !appComment.trim()}
+                className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-40"
+              >
+                <Send size={16} /> {t('feedback.submit')}
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Logout */}
       <button
