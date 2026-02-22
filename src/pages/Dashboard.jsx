@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { RefreshCw, ChefHat, Plus, Moon } from 'lucide-react'
 import FeedbackModal from '../components/FeedbackModal'
 import RecipeCard from '../components/RecipeCard'
-import recipes, { getRecipesForUser } from '../data/recipes'
+import { getRecipesForUser } from '../data/recipes'
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -21,6 +21,15 @@ export default function Dashboard() {
 
   const name = user?.displayName?.split(' ')[0] || ''
 
+  // Get yesterday's meal for variety
+  const yesterdayMeal = useMemo(() => {
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const key = yesterday.toISOString().split('T')[0]
+    const history = JSON.parse(localStorage.getItem('rucola_meal_history') || '{}')
+    return history[key] || null
+  }, [])
+
   const greeting = useMemo(() => {
     if (hour < 12) return t('dashboard.greetingMorning', { name })
     if (hour < 18) return t('dashboard.greeting', { name })
@@ -31,11 +40,12 @@ export default function Dashboard() {
     if (!userProfile) return []
     const fridge = userProfile.fridge || { base: [], vegetable: [], protein: [] }
     const fridgeItems = [...fridge.base, ...fridge.vegetable, ...fridge.protein]
-    const all = getRecipesForUser(userProfile, fridgeItems)
-    // Shuffle with refreshKey as seed
+    const yesterdayId = yesterdayMeal?.recipeId || null
+    const all = getRecipesForUser(userProfile, fridgeItems, yesterdayId)
+    // Shuffle top results with refreshKey as seed
     const shuffled = [...all].sort(() => Math.random() - 0.5 + refreshKey * 0)
     return shuffled.slice(0, 3)
-  }, [userProfile, refreshKey])
+  }, [userProfile, refreshKey, yesterdayMeal])
 
   // Check if feedback needed (simplified — check localStorage)
   useEffect(() => {
@@ -82,6 +92,24 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Yesterday's meal variety hint */}
+      {yesterdayMeal && (
+        <div className="card bg-gradient-to-r from-orange-50 to-yellow-50 mb-4 flex items-center gap-3">
+          <span className="text-2xl">{yesterdayMeal.emoji || '🍽️'}</span>
+          <p className="text-sm text-warm-text">
+            {t('dashboard.yesterdayAte', { meal: yesterdayMeal.recipeName })}
+          </p>
+        </div>
+      )}
+
+      {/* Fridge priority hint */}
+      {!fridgeEmpty && (
+        <div className="flex items-center gap-2 mb-4 px-1">
+          <span className="text-sm">🧊</span>
+          <p className="text-xs text-warm-muted">{t('dashboard.fridgeFirst')}</p>
+        </div>
+      )}
 
       {/* Fridge empty warning */}
       {fridgeEmpty && (

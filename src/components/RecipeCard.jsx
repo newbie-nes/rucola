@@ -1,6 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Clock, ChefHat, Flame } from 'lucide-react'
+import { Clock, ChefHat, Flame, ShoppingCart, CheckCircle } from 'lucide-react'
+
+const FOOD_EMOJIS = {
+  pasta: '🍝', rice: '🍚', bread: '🍞', couscous: '🫓', quinoa: '🌾', potatoes: '🥔',
+  tomatoes: '🍅', zucchini: '🥒', spinach: '🥬', peppers: '🫑', carrots: '🥕',
+  broccoli: '🥦', lettuce: '🥗', onions: '🧅',
+  chicken: '🍗', beef: '🥩', salmon: '🐟', eggs: '🥚', tofu: '🧈',
+  legumes: '🫘', tuna: '🐠', cheese: '🧀'
+}
 
 const difficultyColors = {
   easy: 'bg-green-100 text-green-700',
@@ -12,6 +20,9 @@ export default function RecipeCard({ recipe }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const lang = i18n.language?.startsWith('it') ? 'it' : 'en'
+
+  const fridgeMatch = recipe._fridgeMatch
+  const nutrition = recipe.nutrition
 
   return (
     <button
@@ -38,11 +49,42 @@ export default function RecipeCard({ recipe }) {
             </span>
           </div>
 
-          <div className="flex gap-2 mt-2 text-xs text-warm-muted">
-            <span>🍚 {recipe.base}</span>
-            <span>🥬 {recipe.vegetable}</span>
-            <span>🥩 {recipe.protein}</span>
+          {/* Key ingredients with fridge status */}
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {[
+              { key: recipe.base, type: 'base' },
+              { key: recipe.vegetable, type: 'vegetable' },
+              { key: recipe.protein, type: 'protein' }
+            ].map(({ key, type }) => {
+              const inFridge = fridgeMatch?.inFridge?.includes(key)
+              return (
+                <span
+                  key={type}
+                  className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
+                    inFridge
+                      ? 'bg-green-50 text-green-700 border border-green-200'
+                      : 'bg-orange-50 text-orange-600 border border-orange-200'
+                  }`}
+                >
+                  {FOOD_EMOJIS[key] || '🍽️'} {t(`fridge.items.${key}`, key)}
+                  {inFridge
+                    ? <CheckCircle size={10} />
+                    : <ShoppingCart size={10} />
+                  }
+                </span>
+              )
+            })}
           </div>
+
+          {/* Macronutrients */}
+          {nutrition && (
+            <div className="flex gap-3 mt-2 text-[10px] text-warm-muted">
+              <span className="font-semibold text-orange-500">{nutrition.kcal} {t('recipes.kcal')}</span>
+              <span>P {nutrition.protein}g</span>
+              <span>C {nutrition.carbs}g</span>
+              <span>F {nutrition.fat}g</span>
+            </div>
+          )}
         </div>
       </div>
     </button>

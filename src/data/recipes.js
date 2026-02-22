@@ -58,6 +58,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick", "budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 480, protein: 35, carbs: 58, fat: 12 },
   },
   {
     id: 2,
@@ -111,6 +112,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["budget"],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 470, protein: 33, carbs: 62, fat: 11 },
   },
   {
     id: 3,
@@ -164,6 +166,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["noSpicy"],
     emoji: "\u{1F41F}",
+    nutrition: { kcal: 520, protein: 32, carbs: 42, fat: 22 },
   },
   {
     id: 4,
@@ -217,6 +220,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick", "budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 430, protein: 30, carbs: 56, fat: 10 },
   },
   {
     id: 5,
@@ -270,6 +274,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick"],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 510, protein: 36, carbs: 52, fat: 16 },
   },
   {
     id: 6,
@@ -323,6 +328,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick", "budget"],
     emoji: "\u{1F957}",
+    nutrition: { kcal: 450, protein: 34, carbs: 38, fat: 16 },
   },
   {
     id: 7,
@@ -380,6 +386,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 560, protein: 38, carbs: 58, fat: 18 },
   },
   {
     id: 8,
@@ -433,6 +440,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["noSpicy"],
     emoji: "\u{1F963}",
+    nutrition: { kcal: 490, protein: 30, carbs: 45, fat: 20 },
   },
   {
     id: 9,
@@ -484,6 +492,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick", "budget"],
     emoji: "\u{1F96A}",
+    nutrition: { kcal: 380, protein: 28, carbs: 35, fat: 14 },
   },
   {
     id: 10,
@@ -537,6 +546,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["budget"],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 460, protein: 32, carbs: 60, fat: 10 },
   },
   {
     id: 11,
@@ -590,6 +600,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 530, protein: 29, carbs: 54, fat: 22 },
   },
   {
     id: 12,
@@ -643,6 +654,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["noSpicy"],
     emoji: "\u{1F954}",
+    nutrition: { kcal: 550, protein: 38, carbs: 45, fat: 20 },
   },
   {
     id: 13,
@@ -696,6 +708,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick", "budget"],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 400, protein: 28, carbs: 48, fat: 12 },
   },
   {
     id: 14,
@@ -749,6 +762,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: [],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 520, protein: 34, carbs: 58, fat: 16 },
   },
   {
     id: 15,
@@ -802,6 +816,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick"],
     emoji: "\u{1F956}",
+    nutrition: { kcal: 480, protein: 28, carbs: 40, fat: 22 },
   },
   {
     id: 16,
@@ -855,6 +870,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: [],
     emoji: "\u{1F963}",
+    nutrition: { kcal: 460, protein: 36, carbs: 42, fat: 14 },
   },
   {
     id: 17,
@@ -908,6 +924,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 540, protein: 35, carbs: 56, fat: 18 },
   },
   {
     id: 18,
@@ -961,6 +978,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["budget"],
     emoji: "\u{1F954}",
+    nutrition: { kcal: 420, protein: 30, carbs: 45, fat: 12 },
   },
   {
     id: 19,
@@ -1014,6 +1032,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: ["quick"],
     emoji: "\u{1F32F}",
+    nutrition: { kcal: 440, protein: 33, carbs: 40, fat: 14 },
   },
   {
     id: 20,
@@ -1069,6 +1088,7 @@ const recipes = [
     diet: ["omnivore"],
     tags: [],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 510, protein: 30, carbs: 55, fat: 18 },
   },
 
   // ============================================================
@@ -1124,6 +1144,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 450, protein: 22, carbs: 54, fat: 16 },
   },
   {
     id: 22,
@@ -1177,6 +1198,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick", "budget"],
     emoji: "\u{1F373}",
+    nutrition: { kcal: 400, protein: 20, carbs: 35, fat: 20 },
   },
   {
     id: 23,
@@ -1232,6 +1254,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick", "budget"],
     emoji: "\u{1F9C0}",
+    nutrition: { kcal: 520, protein: 22, carbs: 55, fat: 22 },
   },
   {
     id: 24,
@@ -1287,6 +1310,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 420, protein: 20, carbs: 68, fat: 8 },
   },
   {
     id: 25,
@@ -1338,6 +1362,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick", "budget"],
     emoji: "\u{1F373}",
+    nutrition: { kcal: 380, protein: 18, carbs: 38, fat: 18 },
   },
   {
     id: 26,
@@ -1391,6 +1416,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick"],
     emoji: "\u{1F963}",
+    nutrition: { kcal: 430, protein: 20, carbs: 48, fat: 18 },
   },
   {
     id: 27,
@@ -1448,6 +1474,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 440, protein: 22, carbs: 65, fat: 10 },
   },
   {
     id: 28,
@@ -1501,6 +1528,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["budget"],
     emoji: "\u{1F954}",
+    nutrition: { kcal: 420, protein: 19, carbs: 48, fat: 18 },
   },
   {
     id: 29,
@@ -1554,6 +1582,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick"],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 450, protein: 18, carbs: 52, fat: 20 },
   },
   {
     id: 30,
@@ -1605,6 +1634,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 460, protein: 21, carbs: 56, fat: 16 },
   },
   {
     id: 31,
@@ -1660,6 +1690,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: [],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 500, protein: 22, carbs: 55, fat: 22 },
   },
   {
     id: 32,
@@ -1711,6 +1742,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick", "budget"],
     emoji: "\u{1F32F}",
+    nutrition: { kcal: 390, protein: 16, carbs: 42, fat: 18 },
   },
   {
     id: 33,
@@ -1764,6 +1796,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["quick"],
     emoji: "\u{1F963}",
+    nutrition: { kcal: 400, protein: 22, carbs: 44, fat: 16 },
   },
   {
     id: 34,
@@ -1817,6 +1850,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 430, protein: 20, carbs: 64, fat: 10 },
   },
   {
     id: 35,
@@ -1870,6 +1904,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian"],
     tags: ["noSpicy"],
     emoji: "\u{1F954}",
+    nutrition: { kcal: 480, protein: 20, carbs: 52, fat: 22 },
   },
 
   // ============================================================
@@ -1929,6 +1964,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 400, protein: 20, carbs: 56, fat: 12 },
   },
   {
     id: 37,
@@ -1982,6 +2018,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 380, protein: 18, carbs: 52, fat: 12 },
   },
   {
     id: 38,
@@ -2037,6 +2074,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick", "budget"],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 410, protein: 20, carbs: 60, fat: 10 },
   },
   {
     id: 39,
@@ -2090,6 +2128,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: [],
     emoji: "\u{1F963}",
+    nutrition: { kcal: 370, protein: 22, carbs: 42, fat: 14 },
   },
   {
     id: 40,
@@ -2145,6 +2184,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget", "noSpicy"],
     emoji: "\u{1F372}",
+    nutrition: { kcal: 400, protein: 18, carbs: 62, fat: 8 },
   },
   {
     id: 41,
@@ -2198,6 +2238,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick", "budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 390, protein: 22, carbs: 52, fat: 12 },
   },
   {
     id: 42,
@@ -2251,6 +2292,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 430, protein: 20, carbs: 62, fat: 10 },
   },
   {
     id: 43,
@@ -2306,6 +2348,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick", "budget"],
     emoji: "\u{1F96A}",
+    nutrition: { kcal: 380, protein: 18, carbs: 55, fat: 10 },
   },
   {
     id: 44,
@@ -2359,6 +2402,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: [],
     emoji: "\u{1F954}",
+    nutrition: { kcal: 400, protein: 20, carbs: 48, fat: 14 },
   },
   {
     id: 45,
@@ -2414,6 +2458,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick"],
     emoji: "\u{1F35B}",
+    nutrition: { kcal: 370, protein: 18, carbs: 54, fat: 10 },
   },
   {
     id: 46,
@@ -2465,6 +2510,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick", "budget"],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 420, protein: 22, carbs: 60, fat: 10 },
   },
   {
     id: 47,
@@ -2518,6 +2564,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F35A}",
+    nutrition: { kcal: 390, protein: 20, carbs: 54, fat: 12 },
   },
   {
     id: 48,
@@ -2571,6 +2618,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick"],
     emoji: "\u{1F963}",
+    nutrition: { kcal: 380, protein: 22, carbs: 56, fat: 8 },
   },
   {
     id: 49,
@@ -2624,6 +2672,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick", "budget"],
     emoji: "\u{1F956}",
+    nutrition: { kcal: 350, protein: 18, carbs: 45, fat: 12 },
   },
   {
     id: 50,
@@ -2679,6 +2728,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: [],
     emoji: "\u{1F35D}",
+    nutrition: { kcal: 420, protein: 20, carbs: 58, fat: 12 },
   },
   {
     id: 51,
@@ -2734,6 +2784,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["quick"],
     emoji: "\u{1F957}",
+    nutrition: { kcal: 360, protein: 20, carbs: 40, fat: 14 },
   },
   {
     id: 52,
@@ -2787,6 +2838,7 @@ const recipes = [
     diet: ["omnivore", "vegetarian", "vegan"],
     tags: ["budget"],
     emoji: "\u{1F954}",
+    nutrition: { kcal: 390, protein: 19, carbs: 48, fat: 14 },
   },
 ];
 
@@ -2795,27 +2847,40 @@ const recipes = [
 // ============================================================
 
 /**
- * Filters recipes based on user profile and optional fridge items.
- *
- * @param {Object} userProfile - The user's profile
- * @param {string} userProfile.diet - "omnivore" | "vegetarian" | "vegan"
- * @param {string[]} [userProfile.allergies] - Ingredient keys the user is allergic to
- * @param {string[]} [userProfile.dislikedIngredients] - Ingredient keys the user dislikes
- * @param {string} [userProfile.maxDifficulty] - "easy" | "medium" | "hard"
- * @param {number} [userProfile.maxPrepTime] - Maximum prep time in minutes
- * @param {string[]} [userProfile.preferredTags] - Tags the user prefers (e.g. ["quick", "budget"])
- * @param {string[]} [fridgeItems] - Ingredient keys currently in the fridge
- * @returns {Object[]} Sorted array of matching recipes
+ * Ingredient emoji map for display
  */
-export function getRecipesForUser(userProfile, fridgeItems = []) {
+export const FOOD_EMOJIS = {
+  // bases
+  pasta: '\u{1F35D}', rice: '\u{1F35A}', bread: '\u{1F35E}', couscous: '\u{1FAD3}', quinoa: '\u{1F33E}', potatoes: '\u{1F954}',
+  // vegetables
+  tomatoes: '\u{1F345}', zucchini: '\u{1F952}', spinach: '\u{1F96C}', peppers: '\u{1FAD1}', carrots: '\u{1F955}',
+  broccoli: '\u{1F966}', lettuce: '\u{1F957}', onions: '\u{1F9C5}',
+  // proteins
+  chicken: '\u{1F357}', beef: '\u{1F969}', salmon: '\u{1F41F}', eggs: '\u{1F95A}', tofu: '\u{1F9C8}',
+  legumes: '\u{1FAD8}', tuna: '\u{1F420}', cheese: '\u{1F9C0}'
+}
+
+/**
+ * Get recipes filtered and scored for a user, considering fridge contents and yesterday's meal.
+ * @param {Object} userProfile
+ * @param {string[]} [fridgeItems] - Ingredient keys currently in the fridge
+ * @param {number|null} [yesterdayRecipeId] - Recipe ID eaten yesterday (to avoid repetition)
+ * @returns {Object[]} Sorted array of matching recipes with _fridgeMatch info
+ */
+export function getRecipesForUser(userProfile, fridgeItems = [], yesterdayRecipeId = null) {
   const difficultyRank = { easy: 1, medium: 2, hard: 3 };
+
+  // Find yesterday's recipe for variety scoring
+  const yesterdayRecipe = yesterdayRecipeId
+    ? recipes.find(r => r.id === yesterdayRecipeId)
+    : null;
 
   // Step 1: Filter by diet compatibility
   let filtered = recipes.filter((recipe) => {
     return recipe.diet.includes(userProfile.diet || "omnivore");
   });
 
-  // Step 2: Filter by allergies - check all ingredient keys and allIngredients
+  // Step 2: Filter by allergies
   if (userProfile.allergies && userProfile.allergies.length > 0) {
     filtered = filtered.filter((recipe) => {
       const recipeIngredientKeys = [recipe.base, recipe.vegetable, recipe.protein];
@@ -2862,11 +2927,22 @@ export function getRecipesForUser(userProfile, fridgeItems = []) {
   const scored = filtered.map((recipe) => {
     let score = 0;
 
-    // Fridge match bonus: +10 per matching key ingredient, +5 per matching minor ingredient
-    const keyIngredients = [recipe.base, recipe.vegetable, recipe.protein];
-    keyIngredients.forEach((key) => {
+    // --- Fridge match: track which key ingredients are in/out of fridge ---
+    const keyIngredients = [
+      { type: 'base', key: recipe.base },
+      { type: 'vegetable', key: recipe.vegetable },
+      { type: 'protein', key: recipe.protein }
+    ];
+
+    const inFridge = [];
+    const missing = [];
+
+    keyIngredients.forEach(({ type, key }) => {
       if (normalizedFridge.includes(key.toLowerCase())) {
+        inFridge.push(key);
         score += 10;
+      } else {
+        missing.push(key);
       }
     });
 
@@ -2883,7 +2959,18 @@ export function getRecipesForUser(userProfile, fridgeItems = []) {
       }
     });
 
-    // Preferred tags bonus: +5 per matching tag
+    // --- Yesterday's meal penalty (variety) ---
+    if (yesterdayRecipe) {
+      if (recipe.id === yesterdayRecipe.id) {
+        score -= 15; // same exact recipe
+      } else {
+        if (recipe.protein === yesterdayRecipe.protein) score -= 8;
+        if (recipe.base === yesterdayRecipe.base) score -= 5;
+        if (recipe.vegetable === yesterdayRecipe.vegetable) score -= 3;
+      }
+    }
+
+    // Preferred tags bonus
     if (userProfile.preferredTags && userProfile.preferredTags.length > 0) {
       recipe.tags.forEach((tag) => {
         if (userProfile.preferredTags.includes(tag)) {
@@ -2902,16 +2989,20 @@ export function getRecipesForUser(userProfile, fridgeItems = []) {
       score += 1;
     }
 
-    return { ...recipe, _score: score };
+    return {
+      ...recipe,
+      _score: score,
+      _fridgeMatch: { inFridge, missing }
+    };
   });
 
-  // Sort by score descending, then by prepTime ascending as tiebreaker
+  // Sort by score descending, then prepTime ascending
   scored.sort((a, b) => {
     if (b._score !== a._score) return b._score - a._score;
     return a.prepTime - b.prepTime;
   });
 
-  // Remove internal _score before returning
+  // Keep _fridgeMatch but remove _score
   return scored.map(({ _score, ...recipe }) => recipe);
 }
 

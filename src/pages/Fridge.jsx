@@ -9,6 +9,14 @@ const POPULAR = {
   protein: ['chicken', 'beef', 'salmon', 'eggs', 'tofu', 'legumes', 'tuna', 'cheese']
 }
 
+const FOOD_EMOJIS = {
+  pasta: '🍝', rice: '🍚', bread: '🍞', couscous: '🫓', quinoa: '🌾', potatoes: '🥔',
+  tomatoes: '🍅', zucchini: '🥒', spinach: '🥬', peppers: '🫑', carrots: '🥕',
+  broccoli: '🥦', lettuce: '🥗', onions: '🧅',
+  chicken: '🍗', beef: '🥩', salmon: '🐟', eggs: '🥚', tofu: '🧈',
+  legumes: '🫘', tuna: '🐠', cheese: '🧀'
+}
+
 const CAT_EMOJIS = { base: '🍚', vegetable: '🥬', protein: '🥩' }
 const CAT_COLORS = {
   base: { bg: 'bg-amber-50', border: 'border-amber-200', active: 'bg-amber-100 border-amber-400 text-amber-800' },
@@ -113,6 +121,7 @@ export default function Fridge() {
               className={isActive ? 'chip-active' : 'chip-inactive'}
             >
               {isActive && <span className="text-xs">✓</span>}
+              {FOOD_EMOJIS[item] && <span>{FOOD_EMOJIS[item]}</span>}
               {t(`fridge.items.${item}`, item)}
             </button>
           )
@@ -147,6 +156,7 @@ export default function Fridge() {
                 <div className="flex flex-wrap gap-1.5">
                   {fridge[cat].map(item => (
                     <span key={item} className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 rounded-full text-sm">
+                      {FOOD_EMOJIS[item] && <span>{FOOD_EMOJIS[item]}</span>}
                       {t(`fridge.items.${item}`, item)}
                       <button onClick={() => toggleIngredient(cat, item)} className="text-warm-muted hover:text-danger">
                         <X size={14} />

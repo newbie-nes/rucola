@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import recipes from '../data/recipes'
-import { ArrowLeft, Clock, Flame, Users, Check, CalendarPlus } from 'lucide-react'
+import { ArrowLeft, Clock, Flame, Users, Check, CalendarPlus, Zap } from 'lucide-react'
 
 export default function RecipeDetail() {
   const { id } = useParams()
@@ -79,6 +79,33 @@ export default function RecipeDetail() {
           </div>
           <Check className="text-secondary ml-auto" size={20} />
         </div>
+
+        {/* Macronutrients */}
+        {recipe.nutrition && (
+          <div className="card mb-4">
+            <h2 className="section-title mb-3 flex items-center gap-2">
+              <Zap size={16} className="text-orange-500" /> {t('recipes.nutrition')}
+            </h2>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="bg-orange-50 rounded-xl p-2">
+                <p className="text-lg font-bold text-orange-600">{recipe.nutrition.kcal}</p>
+                <p className="text-[10px] text-orange-400">{t('recipes.kcal')}</p>
+              </div>
+              <div className="bg-red-50 rounded-xl p-2">
+                <p className="text-lg font-bold text-red-500">{recipe.nutrition.protein}g</p>
+                <p className="text-[10px] text-red-400">{t('recipes.proteinG')}</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl p-2">
+                <p className="text-lg font-bold text-amber-600">{recipe.nutrition.carbs}g</p>
+                <p className="text-[10px] text-amber-400">{t('recipes.carbsG')}</p>
+              </div>
+              <div className="bg-yellow-50 rounded-xl p-2">
+                <p className="text-lg font-bold text-yellow-600">{recipe.nutrition.fat}g</p>
+                <p className="text-[10px] text-yellow-400">{t('recipes.fatG')}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Ingredients */}
         <div className="card mb-4">
