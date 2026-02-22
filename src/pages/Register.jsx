@@ -12,6 +12,7 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
   const [showPw, setShowPw] = useState(false)
+  const [gdprConsent, setGdprConsent] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -24,9 +25,13 @@ export default function Register() {
     if (password.length < 6) {
       return setError(t('auth.weakPassword'))
     }
+    if (!gdprConsent) {
+      return setError(t('auth.gdprRequired'))
+    }
     setLoading(true)
     try {
-      await register(email, password, name)
+      const gdprConsentedAt = new Date().toISOString()
+      await register(email, password, name, gdprConsentedAt)
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
         setError(t('auth.emailInUse'))
@@ -105,6 +110,21 @@ export default function Register() {
               required
             />
           </div>
+
+          <label className="flex items-start gap-3 cursor-pointer px-1">
+            <input
+              type="checkbox"
+              checked={gdprConsent}
+              onChange={e => setGdprConsent(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-primary shrink-0"
+            />
+            <span className="text-sm text-warm-text">
+              {t('auth.gdprConsent')}{' '}
+              <Link to="/privacy" className="text-primary font-semibold underline" target="_blank">
+                {t('auth.privacyPolicy')}
+              </Link>
+            </span>
+          </label>
 
           <button type="submit" className="btn-primary w-full" disabled={loading}>
             {loading ? '...' : t('auth.register')}

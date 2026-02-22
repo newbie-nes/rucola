@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '../firebase/config'
 
 const AuthContext = createContext()
 
@@ -32,7 +34,7 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  async function register(email, password, displayName) {
+  async function register(email, password, displayName, gdprConsentedAt) {
     const users = getUsers()
     if (users[email]) {
       throw { code: 'auth/email-already-in-use', message: 'Email already in use' }
@@ -43,6 +45,7 @@ export function AuthProvider({ children }) {
       displayName,
       email,
       createdAt: new Date().toISOString(),
+      gdprConsentedAt: gdprConsentedAt || new Date().toISOString(),
       onboardingComplete: false
     }
     users[email] = { password, user: newUser, profile }
@@ -50,6 +53,19 @@ export function AuthProvider({ children }) {
     setUser(newUser)
     setUserProfile(profile)
     localStorage.setItem('rucola_current_user', JSON.stringify(newUser))
+
+    // Save user to Firestore
+    try {
+      await setDoc(doc(db, 'users', uid), {
+        displayName,
+        email,
+        createdAt: serverTimestamp(),
+        gdprConsentedAt: gdprConsentedAt || new Date().toISOString()
+      })
+    } catch (e) {
+      console.warn('Firestore user save failed (offline?):', e)
+    }
+
     return newUser
   }
 
@@ -69,6 +85,27 @@ export function AuthProvider({ children }) {
     setUser(null)
     setUserProfile(null)
     localStorage.removeItem('rucola_current_user')
+  }
+
+  async function deleteAccount() {
+    if (!user) return
+    // Remove user from rucola_users
+    const users = getUsers()
+    const emailKey = Object.keys(users).find(k => users[k].user?.uid === user.uid)
+    if (emailKey) {
+      delete users[emailKey]
+      saveUsers(users)
+    }
+    // Clean up all user data
+    localStorage.removeItem('rucola_current_user')
+    localStorage.removeItem('rucola_feedbacks')
+    localStorage.removeItem('rucola_meal_history')
+    localStorage.removeItem('rucola_last_meal')
+    localStorage.removeItem('rucola_last_meal_name')
+    localStorage.removeItem('rucola_last_feedback')
+    // Reset state
+    setUser(null)
+    setUserProfile(null)
   }
 
   async function resetPassword(email) {
@@ -100,6 +137,7 @@ export function AuthProvider({ children }) {
     register,
     login,
     logout,
+    deleteAccount,
     resetPassword,
     updateUserProfile,
     loadProfile

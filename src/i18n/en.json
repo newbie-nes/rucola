@@ -30,7 +30,10 @@
     "resetSent": "We've sent you an email to reset your password",
     "passwordMismatch": "Passwords don't match",
     "weakPassword": "Password must be at least 8 characters",
-    "emailInUse": "This email is already registered"
+    "emailInUse": "This email is already registered",
+    "gdprConsent": "I have read and accept the",
+    "privacyPolicy": "Privacy Policy",
+    "gdprRequired": "You must accept the Privacy Policy to continue"
   },
   "onboarding": {
     "welcome": "Hi, I'm Rucola!",
@@ -253,7 +256,10 @@
     "editProfile": "Edit profile",
     "dietPreferences": "Diet preferences",
     "logout": "Log out",
-    "deleteAccount": "Delete account"
+    "deleteAccount": "Delete account",
+    "deleteConfirm": "Are you sure? All your data will be permanently deleted.",
+    "privacyPolicy": "Privacy Policy",
+    "accountDeleted": "Account deleted"
   },
   "shopping": {
     "missingTitle": "Ingredients to buy",

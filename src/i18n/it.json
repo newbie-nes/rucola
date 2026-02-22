@@ -30,7 +30,10 @@
     "resetSent": "Ti abbiamo inviato un'email per reimpostare la password",
     "passwordMismatch": "Le password non coincidono",
     "weakPassword": "La password deve avere almeno 8 caratteri",
-    "emailInUse": "Questa email \u00e8 gi\u00e0 registrata"
+    "emailInUse": "Questa email \u00e8 gi\u00e0 registrata",
+    "gdprConsent": "Ho letto e accetto la",
+    "privacyPolicy": "Privacy Policy",
+    "gdprRequired": "Devi accettare la Privacy Policy per continuare"
   },
   "onboarding": {
     "welcome": "Ciao, sono Rucola!",
@@ -253,7 +256,10 @@
     "editProfile": "Modifica profilo",
     "dietPreferences": "Preferenze alimentari",
     "logout": "Esci",
-    "deleteAccount": "Elimina account"
+    "deleteAccount": "Elimina account",
+    "deleteConfirm": "Sei sicuro? Tutti i tuoi dati verranno eliminati permanentemente.",
+    "privacyPolicy": "Privacy Policy",
+    "accountDeleted": "Account eliminato"
   },
   "shopping": {
     "missingTitle": "Ingredienti da comprare",

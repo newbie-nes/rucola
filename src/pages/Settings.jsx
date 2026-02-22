@@ -1,14 +1,16 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import {
-  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight
+  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, Trash2, Shield
 } from 'lucide-react'
 
 export default function Settings() {
   const { t, i18n } = useTranslation()
-  const { user, userProfile, logout } = useAuth()
+  const { user, userProfile, logout, deleteAccount } = useAuth()
   const navigate = useNavigate()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   function toggleLanguage() {
     const newLang = i18n.language?.startsWith('it') ? 'en' : 'it'
@@ -17,6 +19,11 @@ export default function Settings() {
 
   async function handleLogout() {
     await logout()
+    navigate('/login')
+  }
+
+  async function handleDeleteAccount() {
+    await deleteAccount()
     navigate('/login')
   }
 
@@ -77,14 +84,59 @@ export default function Settings() {
         />
       </div>
 
+      {/* Privacy Policy link */}
+      <Link
+        to="/privacy"
+        className="w-full mt-6 card flex items-center gap-3 text-left py-4"
+      >
+        <div className="text-primary"><Shield size={20} /></div>
+        <div className="flex-1">
+          <p className="font-medium">{t('settings.privacyPolicy')}</p>
+        </div>
+        <ChevronRight size={18} className="text-warm-muted" />
+      </Link>
+
       {/* Logout */}
       <button
         onClick={handleLogout}
-        className="w-full mt-8 py-3 flex items-center justify-center gap-2 text-danger font-semibold"
+        className="w-full mt-6 py-3 flex items-center justify-center gap-2 text-danger font-semibold"
       >
         <LogOut size={20} />
         {t('settings.logout')}
       </button>
+
+      {/* Delete account */}
+      <button
+        onClick={() => setShowDeleteConfirm(true)}
+        className="w-full mt-2 py-3 flex items-center justify-center gap-2 text-red-400 text-sm"
+      >
+        <Trash2 size={16} />
+        {t('settings.deleteAccount')}
+      </button>
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-6">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <h3 className="text-lg font-bold text-red-600 mb-3">{t('settings.deleteAccount')}</h3>
+            <p className="text-sm text-warm-text mb-6">{t('settings.deleteConfirm')}</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl bg-gray-100 font-medium text-warm-text"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-medium"
+              >
+                {t('common.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <p className="text-center text-xs text-warm-muted mt-4">Rucola v1.0.0</p>
     </div>

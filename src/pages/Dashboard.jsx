@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { RefreshCw, ChefHat, Plus, Moon, Star, Send } from 'lucide-react'
 import RecipeCard from '../components/RecipeCard'
 import { getRecipesForUser } from '../data/recipes'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '../firebase/config'
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -74,7 +76,7 @@ export default function Dashboard() {
      (userProfile.fridge.spice?.length || 0) === 0 &&
      (userProfile.fridge.altro?.length || 0) === 0)
 
-  function submitFeedback() {
+  async function submitFeedback() {
     if (feedbackRating === 0) return
     const lastMeal = localStorage.getItem('rucola_last_meal') || '?'
     const lastMealName = localStorage.getItem('rucola_last_meal_name') || lastMeal
@@ -89,6 +91,22 @@ export default function Dashboard() {
     localStorage.setItem('rucola_feedbacks', JSON.stringify(feedbacks))
     localStorage.setItem('rucola_last_feedback', new Date().toDateString())
     setFeedbackSubmitted(true)
+
+    // Save to Firestore
+    try {
+      await addDoc(collection(db, 'feedbacks'), {
+        userId: user?.uid || 'unknown',
+        userName: user?.displayName || 'Unknown',
+        userEmail: user?.email || '',
+        mealId: lastMeal,
+        mealName: lastMealName,
+        rating: feedbackRating,
+        comment: feedbackComment,
+        createdAt: serverTimestamp()
+      })
+    } catch (e) {
+      console.warn('Firestore feedback save failed (offline?):', e)
+    }
   }
 
   return (
