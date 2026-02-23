@@ -103,6 +103,10 @@
   "fridge": {
     "title": "Il tuo frigo",
     "subtitle": "Dimmi cosa hai in casa e ti dico cosa cucinare",
+    "saveFridge": "Salva frigo",
+    "savedSuccess": "Frigo salvato con successo!",
+    "newlyAdded": "Nuovi ingredienti aggiunti:",
+    "noNewItems": "Nessun nuovo ingrediente — il frigo è aggiornato",
     "categories": {
       "base": "Base",
       "vegetable": "Verdure",
@@ -113,7 +117,7 @@
     "addCustom": "Aggiungi ingrediente",
     "customPlaceholder": "Es. mozzarella, basilico...",
     "smartPlaceholder": "Scrivi un ingrediente...",
-    "empty": "Il frigo \u00e8 vuoto! Inizia ad aggiungere ingredienti",
+    "empty": "Il frigo è vuoto! Inizia ad aggiungere ingredienti",
     "clearAll": "Svuota tutto",
     "items": {
       "pasta": "Pasta",
@@ -275,5 +279,11 @@
     "fridge": "Frigo",
     "history": "Storico",
     "settings": "Impostazioni"
+  },
+  "pageInfo": {
+    "dashboard": "Qui trovi i suggerimenti del tuo sous-chef personale! Ti propongo ricette bilanciate in base a cosa hai in frigo e alle tue preferenze.",
+    "fridge": "Aggiungi gli ingredienti che hai in casa. Scrivi il nome o scegli dalla lista — li uso per proporti le ricette migliori!",
+    "history": "Il tuo diario dei pasti! Tocca un giorno per vedere cosa hai cucinato. Ti aiuta a variare e a tenere traccia dei tuoi pasti.",
+    "settings": "Gestisci il tuo profilo, cambia lingua, modifica le preferenze alimentari o lascia un feedback per migliorare l'app."
   }
 }

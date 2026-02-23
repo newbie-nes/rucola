@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import PageInfoBox from '../components/PageInfoBox'
 
 const DAYS_IT = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']
 const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -56,7 +57,13 @@ export default function History() {
   return (
     <div className="page-container">
       <h1 className="text-2xl font-bold mb-1">{t('history.title')} 📅</h1>
-      <p className="text-warm-muted text-sm mb-6">{t('history.subtitle')}</p>
+      <p className="text-warm-muted text-sm mb-4">{t('history.subtitle')}</p>
+
+      <PageInfoBox
+        icon="📅"
+        text={t('pageInfo.history')}
+        dismissKey="history"
+      />
 
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-4">

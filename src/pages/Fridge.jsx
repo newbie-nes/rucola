@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
-import { Plus, X, Trash2, Search } from 'lucide-react'
+import { Plus, X, Trash2, Search, Save, Check } from 'lucide-react'
 import { autoCategorize } from '../utils/autoCategorize'
+import PageInfoBox from '../components/PageInfoBox'
 
 const POPULAR = {
   base: ['pasta', 'rice', 'bread', 'couscous', 'quinoa', 'potatoes'],
@@ -38,8 +39,41 @@ export default function Fridge() {
   const [smartInput, setSmartInput] = useState('')
   const [activeCategory, setActiveCategory] = useState('base')
   const [searchQuery, setSearchQuery] = useState('')
+  const [savedToast, setSavedToast] = useState(false)
+  const [newItems, setNewItems] = useState([])
 
   const fridge = userProfile?.fridge || { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+
+  // Track initial fridge state on mount
+  const initialFridgeRef = useRef(null)
+  useEffect(() => {
+    if (userProfile?.fridge && !initialFridgeRef.current) {
+      initialFridgeRef.current = JSON.parse(JSON.stringify(userProfile.fridge))
+    }
+  }, [userProfile?.fridge])
+
+  // Calculate new items since page load
+  function getNewItems() {
+    if (!initialFridgeRef.current) return []
+    const items = []
+    CATEGORIES.forEach(cat => {
+      const initial = initialFridgeRef.current[cat] || []
+      const current = fridge[cat] || []
+      current.forEach(item => {
+        if (!initial.includes(item)) items.push({ category: cat, item })
+      })
+    })
+    return items
+  }
+
+  function handleSaveFridge() {
+    const added = getNewItems()
+    setNewItems(added)
+    setSavedToast(true)
+    // Update initial ref to current state
+    initialFridgeRef.current = JSON.parse(JSON.stringify(fridge))
+    setTimeout(() => setSavedToast(false), 3000)
+  }
 
   function toggleIngredient(category, item) {
     const current = fridge[category] || []
@@ -91,6 +125,12 @@ export default function Fridge() {
           </button>
         )}
       </div>
+
+      <PageInfoBox
+        icon="🧊"
+        text={t('pageInfo.fridge')}
+        dismissKey="fridge"
+      />
 
       {/* Smart input — primary method */}
       <div className="flex gap-2 mb-6">
@@ -160,6 +200,44 @@ export default function Fridge() {
             })}
           </div>
         </>
+      )}
+
+      {/* Save fridge button */}
+      {totalItems > 0 && (
+        <button
+          onClick={handleSaveFridge}
+          className="w-full mb-4 btn-primary flex items-center justify-center gap-2"
+        >
+          <Save size={18} /> {t('fridge.saveFridge')}
+        </button>
+      )}
+
+      {/* Save confirmation toast */}
+      {savedToast && (
+        <div className="mb-4 card border-2 border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 animate-fade-in">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">
+              <Check size={18} />
+            </span>
+            <p className="font-semibold text-green-700">{t('fridge.savedSuccess')}</p>
+          </div>
+          {newItems.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs text-green-600 font-semibold mb-1">{t('fridge.newlyAdded')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {newItems.map(({ category, item }, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                    {FOOD_EMOJIS[item] && <span>{FOOD_EMOJIS[item]}</span>}
+                    {t(`fridge.items.${item}`, item)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {newItems.length === 0 && (
+            <p className="text-xs text-green-500">{t('fridge.noNewItems')}</p>
+          )}
+        </div>
       )}
 
       {/* Current fridge summary */}

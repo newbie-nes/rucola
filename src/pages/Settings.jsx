@@ -7,6 +7,7 @@ import { db } from '../firebase/config'
 import {
   Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, Trash2, Shield, MessageCircle, Send, Star
 } from 'lucide-react'
+import PageInfoBox from '../components/PageInfoBox'
 
 export default function Settings() {
   const { t, i18n } = useTranslation()
@@ -61,7 +62,13 @@ export default function Settings() {
 
   return (
     <div className="page-container">
-      <h1 className="text-2xl font-bold mb-6">{t('settings.title')} ⚙️</h1>
+      <h1 className="text-2xl font-bold mb-4">{t('settings.title')} ⚙️</h1>
+
+      <PageInfoBox
+        icon="⚙️"
+        text={t('pageInfo.settings')}
+        dismissKey="settings"
+      />
 
       {/* Profile card */}
       <div className="card mb-6 flex items-center gap-4">

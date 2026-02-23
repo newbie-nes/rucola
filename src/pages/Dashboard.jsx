@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { RefreshCw, ChefHat, Plus, Moon, Star, Send } from 'lucide-react'
 import RecipeCard from '../components/RecipeCard'
+import PageInfoBox from '../components/PageInfoBox'
+import ChefMascot from '../components/ChefMascot'
 import { getRecipesForUser } from '../data/recipes'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
@@ -118,15 +120,19 @@ export default function Dashboard() {
         <p className="text-warm-muted">{t('dashboard.whatToday')}</p>
       </div>
 
+      <PageInfoBox
+        icon="👨‍🍳"
+        text={t('pageInfo.dashboard')}
+        dismissKey="dashboard"
+      />
+
       {/* Sous-chef card */}
-      <div className="card bg-gradient-to-br from-primary/5 to-accent/10 mb-6">
+      <div className="card bg-gradient-to-br from-primary/5 via-white to-accent/10 mb-6 border border-primary/10">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
-            <ChefHat className="text-primary" size={24} />
-          </div>
-          <div>
+          <ChefMascot mood="happy" size="sm" />
+          <div className="flex-1">
             <p className="font-semibold text-sm text-primary mb-1">{t('dashboard.souschefSays')}</p>
-            <p className="text-sm text-warm-text">{tip}</p>
+            <p className="text-sm text-warm-text leading-relaxed">{tip}</p>
           </div>
         </div>
       </div>

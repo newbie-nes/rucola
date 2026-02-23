@@ -105,7 +105,7 @@ export default function RecipeDetail() {
     if (allFridgeAliases.some(aliases => aliases.some(alias => lower.includes(alias)))) return 'inFridge'
     // Fuzzy match against fridge items using ingredientMatch utility
     if (fridgeItems.some(fi => ingredientsMatch(fi, ingredientText))) return 'inFridge'
-    return 'pantry'
+    return 'missing'
   }
 
   // Classify all ingredients, keeping original order
@@ -113,6 +113,9 @@ export default function RecipeDetail() {
     text: ing,
     status: getIngredientStatus(ing)
   }))
+
+  // Collect ALL missing ingredients (not just key ones) for shopping card
+  const allMissingIngredients = classifiedIngredients.filter(ing => ing.status === 'missing')
 
   function addToCalendar() {
     const today = new Date().toISOString().split('T')[0]
@@ -304,19 +307,19 @@ export default function RecipeDetail() {
         </div>
 
         {/* ========== SHOPPING CARD ========== */}
-        {missing.length > 0 && (
+        {allMissingIngredients.length > 0 && (
           <div className="card mb-4 border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50">
             <h2 className="section-title mb-3 flex items-center gap-2 text-orange-700">
               <span className="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">✗</span>
               {t('shopping.missingTitle')}
             </h2>
             <div className="flex flex-wrap gap-2 mb-4">
-              {missing.map(key => (
+              {allMissingIngredients.map((ing, i) => (
                 <span
-                  key={key}
+                  key={i}
                   className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-semibold"
                 >
-                  {FOOD_EMOJIS[key] || '🍽️'} {t(`fridge.items.${key}`, key)}
+                  🛒 {ing.text}
                 </span>
               ))}
             </div>

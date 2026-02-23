@@ -103,6 +103,10 @@
   "fridge": {
     "title": "Your fridge",
     "subtitle": "Tell me what you have and I'll tell you what to cook",
+    "saveFridge": "Save fridge",
+    "savedSuccess": "Fridge saved successfully!",
+    "newlyAdded": "Newly added ingredients:",
+    "noNewItems": "No new ingredients — your fridge is up to date",
     "categories": {
       "base": "Base",
       "vegetable": "Vegetables",
@@ -275,5 +279,11 @@
     "fridge": "Fridge",
     "history": "History",
     "settings": "Settings"
+  },
+  "pageInfo": {
+    "dashboard": "Here you'll find your personal sous-chef's suggestions! I suggest balanced recipes based on what's in your fridge and your preferences.",
+    "fridge": "Add the ingredients you have at home. Type the name or pick from the list — I'll use them to suggest the best recipes!",
+    "history": "Your meal diary! Tap a day to see what you cooked. It helps you vary your meals and keep track of what you've eaten.",
+    "settings": "Manage your profile, change language, edit dietary preferences, or leave feedback to help improve the app."
   }
 }
