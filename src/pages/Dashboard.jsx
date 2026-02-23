@@ -12,7 +12,7 @@ import { db } from '../firebase/config'
 
 export default function Dashboard() {
   const { t } = useTranslation()
-  const { user, userProfile } = useAuth()
+  const { user, userProfile, updateUserProfile } = useAuth()
   const navigate = useNavigate()
   const [refreshKey, setRefreshKey] = useState(0)
   const [lunchboxFilter, setLunchboxFilter] = useState(true)
@@ -29,20 +29,20 @@ export default function Dashboard() {
 
   const name = user?.displayName?.split(' ')[0] || ''
 
-  // Get yesterday's meal for variety
+  // Get yesterday's meal for variety (from Firestore via profile)
   const yesterdayMeal = useMemo(() => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     const key = yesterday.toISOString().split('T')[0]
-    const history = JSON.parse(localStorage.getItem('rucola_meal_history') || '{}')
+    const history = userProfile?.mealHistory || {}
     return history[key] || null
-  }, [])
+  }, [userProfile])
 
-  // Check if feedback already given today
+  // Check if feedback already given today (stored in profile)
   const feedbackAlreadyGiven = useMemo(() => {
-    const lastFeedback = localStorage.getItem('rucola_last_feedback')
+    const lastFeedback = userProfile?.lastFeedbackDate
     return lastFeedback === new Date().toDateString()
-  }, [])
+  }, [userProfile])
 
   const showFeedbackForm = yesterdayMeal && !feedbackAlreadyGiven && !feedbackSubmitted
 
@@ -80,35 +80,28 @@ export default function Dashboard() {
 
   async function submitFeedback() {
     if (feedbackRating === 0) return
-    const lastMeal = localStorage.getItem('rucola_last_meal') || '?'
-    const lastMealName = localStorage.getItem('rucola_last_meal_name') || lastMeal
-    const feedbacks = JSON.parse(localStorage.getItem('rucola_feedbacks') || '[]')
-    feedbacks.push({
-      mealId: lastMeal,
-      mealName: lastMealName,
-      rating: feedbackRating,
-      comment: feedbackComment,
-      createdAt: new Date().toISOString()
-    })
-    localStorage.setItem('rucola_feedbacks', JSON.stringify(feedbacks))
-    localStorage.setItem('rucola_last_feedback', new Date().toDateString())
-    setFeedbackSubmitted(true)
+    const mealId = yesterdayMeal?.recipeId || '?'
+    const mealName = yesterdayMeal?.recipeName || '?'
 
-    // Save to Firestore
+    // Save feedback to Firestore
     try {
       await addDoc(collection(db, 'feedbacks'), {
         userId: user?.uid || 'unknown',
         userName: user?.displayName || 'Unknown',
         userEmail: user?.email || '',
-        mealId: lastMeal,
-        mealName: lastMealName,
+        mealId: String(mealId),
+        mealName,
         rating: feedbackRating,
         comment: feedbackComment,
         createdAt: serverTimestamp()
       })
     } catch (e) {
-      console.warn('Firestore feedback save failed (offline?):', e)
+      console.warn('Firestore feedback save failed:', e)
     }
+
+    // Mark feedback as given today (in profile)
+    await updateUserProfile({ lastFeedbackDate: new Date().toDateString() })
+    setFeedbackSubmitted(true)
   }
 
   return (

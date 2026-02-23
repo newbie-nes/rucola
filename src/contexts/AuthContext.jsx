@@ -1,6 +1,15 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from '../firebase/config'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  deleteUser,
+  updateProfile
+} from 'firebase/auth'
+import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, db } from '../firebase/config'
 
 const AuthContext = createContext()
 
@@ -8,219 +17,119 @@ export function useAuth() {
   return useContext(AuthContext)
 }
 
-// LocalStorage-based auth for demo/MVP
-// Replace with Firebase when ready for production
-function getUsers() {
-  return JSON.parse(localStorage.getItem('rucola_users') || '{}')
-}
-
-function saveUsers(users) {
-  localStorage.setItem('rucola_users', JSON.stringify(users))
-}
-
-async function seedAdminAccount() {
-  const users = getUsers()
-  const adminEmail = 'alberghinaernesto@gmail.com'
-  const uid = 'admin_ernesto'
-  const now = new Date().toISOString()
-
-  if (users[adminEmail]) {
-    // Account exists → force correct password and uid
-    users[adminEmail].password = 'rucola2026'
-    users[adminEmail].user.uid = uid
-    saveUsers(users)
-    return
-  }
-
-  // Account doesn't exist → create from scratch
-  users[adminEmail] = {
-    password: 'rucola2026',
-    user: { uid, email: adminEmail, displayName: 'Ernesto' },
-    profile: {
-      displayName: 'Ernesto',
-      email: adminEmail,
-      createdAt: now,
-      gdprConsentedAt: now,
-      onboardingComplete: false
-    }
-  }
-  saveUsers(users)
-
-  // Also save to Firestore
-  try {
-    await setDoc(doc(db, 'users', uid), {
-      displayName: 'Ernesto',
-      email: adminEmail,
-      createdAt: serverTimestamp(),
-      gdprConsentedAt: now
-    })
-  } catch (e) {
-    console.warn('Firestore admin seed failed (offline?):', e)
-  }
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Listen to Firebase Auth state changes
   useEffect(() => {
-    // Seed admin account so it exists on every browser/device
-    seedAdminAccount()
-
-    async function init() {
-      const stored = localStorage.getItem('rucola_current_user')
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        setUser(parsed)
-        const users = getUsers()
-        let profile = users[parsed.uid]?.profile || null
-
-        // Try to load fresh profile from Firestore
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser)
+        // Load profile from Firestore
         try {
-          const snap = await getDoc(doc(db, 'users', parsed.uid))
+          const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
           if (snap.exists()) {
-            const firestoreProfile = snap.data()
-            profile = { ...profile, ...firestoreProfile }
-            // Update localStorage with merged data
-            const emailKey = Object.keys(users).find(k => users[k].user?.uid === parsed.uid)
-            if (emailKey) {
-              users[emailKey].profile = profile
-              saveUsers(users)
-            }
+            setUserProfile(snap.data())
+          } else {
+            // User exists in Auth but not in Firestore (edge case)
+            setUserProfile(null)
           }
         } catch (e) {
-          console.warn('Firestore profile load on init failed (offline?):', e)
+          console.warn('Failed to load profile from Firestore:', e)
+          setUserProfile(null)
         }
-
-        setUserProfile(profile)
+      } else {
+        setUser(null)
+        setUserProfile(null)
       }
       setLoading(false)
-    }
+    })
 
-    init()
+    return unsubscribe
   }, [])
 
   async function register(email, password, displayName, gdprConsentedAt) {
-    const users = getUsers()
-    if (users[email]) {
-      throw { code: 'auth/email-already-in-use', message: 'Email already in use' }
-    }
-    const uid = 'user_' + Date.now()
-    const newUser = { uid, email, displayName }
+    // Create user in Firebase Auth
+    const cred = await createUserWithEmailAndPassword(auth, email, password)
+    const firebaseUser = cred.user
+
+    // Set display name
+    await updateProfile(firebaseUser, { displayName })
+
+    // Create profile in Firestore
     const profile = {
       displayName,
       email,
-      createdAt: new Date().toISOString(),
+      createdAt: serverTimestamp(),
       gdprConsentedAt: gdprConsentedAt || new Date().toISOString(),
-      onboardingComplete: false
+      onboardingComplete: false,
+      mealHistory: {}
     }
-    users[email] = { password, user: newUser, profile }
-    saveUsers(users)
-    setUser(newUser)
+    await setDoc(doc(db, 'users', firebaseUser.uid), profile)
+
     setUserProfile(profile)
-    localStorage.setItem('rucola_current_user', JSON.stringify(newUser))
-
-    // Save user to Firestore
-    try {
-      await setDoc(doc(db, 'users', uid), {
-        displayName,
-        email,
-        createdAt: serverTimestamp(),
-        gdprConsentedAt: gdprConsentedAt || new Date().toISOString()
-      })
-    } catch (e) {
-      console.warn('Firestore user save failed (offline?):', e)
-    }
-
-    return newUser
+    return firebaseUser
   }
 
   async function login(email, password) {
-    const users = getUsers()
-    const entry = users[email]
-    if (!entry || entry.password !== password) {
-      throw { code: 'auth/wrong-password', message: 'Invalid email or password' }
-    }
-    setUser(entry.user)
-    localStorage.setItem('rucola_current_user', JSON.stringify(entry.user))
-
-    // Try loading profile from Firestore (cross-device sync)
-    let profile = entry.profile
-    try {
-      const snap = await getDoc(doc(db, 'users', entry.user.uid))
-      if (snap.exists()) {
-        const firestoreProfile = snap.data()
-        // Merge: Firestore wins for fridge/habits, local wins for missing fields
-        profile = { ...profile, ...firestoreProfile }
-        // Update localStorage with merged profile
-        entry.profile = profile
-        saveUsers(users)
-      }
-    } catch (e) {
-      console.warn('Firestore profile load failed (offline?):', e)
-    }
-
-    setUserProfile(profile)
-    return entry.user
+    const cred = await signInWithEmailAndPassword(auth, email, password)
+    // Profile will be loaded by onAuthStateChanged listener
+    return cred.user
   }
 
   async function logout() {
-    setUser(null)
-    setUserProfile(null)
-    localStorage.removeItem('rucola_current_user')
+    await signOut(auth)
+    // State cleared by onAuthStateChanged listener
   }
 
   async function deleteAccount() {
     if (!user) return
-    // Remove user from rucola_users
-    const users = getUsers()
-    const emailKey = Object.keys(users).find(k => users[k].user?.uid === user.uid)
-    if (emailKey) {
-      delete users[emailKey]
-      saveUsers(users)
+    const uid = user.uid
+    // Delete Firestore profile
+    try {
+      await deleteDoc(doc(db, 'users', uid))
+    } catch (e) {
+      console.warn('Failed to delete Firestore profile:', e)
     }
-    // Clean up all user data
-    localStorage.removeItem('rucola_current_user')
-    localStorage.removeItem('rucola_feedbacks')
-    localStorage.removeItem('rucola_meal_history')
-    localStorage.removeItem('rucola_last_meal')
-    localStorage.removeItem('rucola_last_meal_name')
-    localStorage.removeItem('rucola_last_feedback')
-    // Reset state
-    setUser(null)
-    setUserProfile(null)
+    // Delete Firebase Auth account
+    await deleteUser(user)
+    // State cleared by onAuthStateChanged listener
   }
 
   async function resetPassword(email) {
-    // In demo mode, just simulate
-    return true
+    await sendPasswordResetEmail(auth, email)
   }
 
   async function updateUserProfile(data) {
     if (!user) return
     const updated = { ...userProfile, ...data }
     setUserProfile(updated)
-    // Persist to users store (localStorage)
-    const users = getUsers()
-    const entry = Object.values(users).find(u => u.user.uid === user.uid)
-    if (entry) {
-      entry.profile = updated
-      saveUsers(users)
-    }
-    // Sync to Firestore
+    // Save to Firestore
     try {
       await setDoc(doc(db, 'users', user.uid), {
         ...updated,
         updatedAt: serverTimestamp()
       }, { merge: true })
     } catch (e) {
-      console.warn('Firestore profile sync failed (offline?):', e)
+      console.warn('Firestore profile sync failed:', e)
     }
   }
 
-  async function loadProfile() {
-    return userProfile
+  // Save a meal to Firestore (replaces localStorage meal history)
+  async function saveMeal(dateKey, mealData) {
+    if (!user) return
+    const updatedHistory = { ...(userProfile?.mealHistory || {}), [dateKey]: mealData }
+    setUserProfile(prev => ({ ...prev, mealHistory: updatedHistory }))
+    try {
+      await setDoc(doc(db, 'users', user.uid), {
+        mealHistory: updatedHistory,
+        updatedAt: serverTimestamp()
+      }, { merge: true })
+    } catch (e) {
+      console.warn('Firestore meal save failed:', e)
+    }
   }
 
   const value = {
@@ -233,7 +142,7 @@ export function AuthProvider({ children }) {
     deleteAccount,
     resetPassword,
     updateUserProfile,
-    loadProfile
+    saveMeal
   }
 
   return (

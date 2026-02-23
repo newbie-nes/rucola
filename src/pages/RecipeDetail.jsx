@@ -28,7 +28,7 @@ export default function RecipeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
-  const { user, userProfile } = useAuth()
+  const { user, userProfile, saveMeal } = useAuth()
   const lang = i18n.language?.startsWith('it') ? 'it' : 'en'
 
   const [fbRating, setFbRating] = useState(0)
@@ -122,17 +122,12 @@ export default function RecipeDetail() {
     const hour = new Date().getHours()
     const mealType = hour >= 19 ? 'dinner' : 'lunch'
 
-    localStorage.setItem('rucola_last_meal', String(recipe.id))
-    localStorage.setItem('rucola_last_meal_name', recipe.name[lang])
-
-    const history = JSON.parse(localStorage.getItem('rucola_meal_history') || '{}')
-    history[today] = {
+    saveMeal(today, {
       recipeId: recipe.id,
       recipeName: recipe.name[lang],
       emoji: recipe.emoji,
       type: mealType
-    }
-    localStorage.setItem('rucola_meal_history', JSON.stringify(history))
+    })
     navigate('/')
   }
 

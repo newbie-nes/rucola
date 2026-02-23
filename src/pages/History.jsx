@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -11,8 +11,7 @@ const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July
 
 export default function History() {
   const { t, i18n } = useTranslation()
-  const { user } = useAuth()
-  const [meals, setMeals] = useState({})
+  const { userProfile } = useAuth()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDay, setSelectedDay] = useState(null)
 
@@ -20,10 +19,7 @@ export default function History() {
   const dayNames = lang === 'it' ? DAYS_IT : DAYS_EN
   const monthNames = lang === 'it' ? MONTHS_IT : MONTHS_EN
 
-  useEffect(() => {
-    const stored = localStorage.getItem('rucola_meal_history')
-    if (stored) setMeals(JSON.parse(stored))
-  }, [user])
+  const meals = userProfile?.mealHistory || {}
 
   const calendarDays = useMemo(() => {
     const year = currentMonth.getFullYear()
