@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -12,6 +14,7 @@ import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from 'firebase/firest
 import { auth, db } from '../firebase/config'
 
 const AuthContext = createContext()
+const googleProvider = new GoogleAuthProvider()
 
 export function useAuth() {
   return useContext(AuthContext)
@@ -79,6 +82,29 @@ export function AuthProvider({ children }) {
     return cred.user
   }
 
+  async function loginWithGoogle() {
+    const cred = await signInWithPopup(auth, googleProvider)
+    const firebaseUser = cred.user
+
+    // Check if profile exists in Firestore, if not create it
+    const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
+    if (!snap.exists()) {
+      const profile = {
+        displayName: firebaseUser.displayName || '',
+        email: firebaseUser.email,
+        createdAt: serverTimestamp(),
+        gdprConsentedAt: new Date().toISOString(),
+        onboardingComplete: false,
+        mealHistory: {}
+      }
+      await setDoc(doc(db, 'users', firebaseUser.uid), profile)
+      setUserProfile(profile)
+    }
+    // Otherwise onAuthStateChanged will load the profile
+
+    return firebaseUser
+  }
+
   async function logout() {
     await signOut(auth)
     // State cleared by onAuthStateChanged listener
@@ -138,6 +164,7 @@ export function AuthProvider({ children }) {
     loading,
     register,
     login,
+    loginWithGoogle,
     logout,
     deleteAccount,
     resetPassword,
