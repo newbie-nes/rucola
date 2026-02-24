@@ -148,6 +148,22 @@
       "legumes": "Legumes",
       "tuna": "Tuna",
       "cheese": "Cheese",
+      "shrimp": "Shrimp",
+      "ham": "Ham",
+      "turkey": "Turkey",
+      "seitan": "Seitan",
+      "tempeh": "Tempeh",
+      "farro": "Farro",
+      "orzo": "Orzo",
+      "polenta": "Polenta",
+      "bulgur": "Bulgur",
+      "eggplant": "Eggplant",
+      "mushrooms": "Mushrooms",
+      "cauliflower": "Cauliflower",
+      "avocado": "Avocado",
+      "corn": "Corn",
+      "artichokes": "Artichokes",
+      "asparagus": "Asparagus",
       "basil": "Basil",
       "parsley": "Parsley",
       "rosemary": "Rosemary",
@@ -169,7 +185,11 @@
       "bread": "Bread",
       "couscous": "Couscous",
       "quinoa": "Quinoa",
-      "potatoes": "Potatoes"
+      "potatoes": "Potatoes",
+      "farro": "Farro",
+      "orzo": "Orzo",
+      "polenta": "Polenta",
+      "bulgur": "Bulgur"
     },
     "popularVegetable": {
       "tomatoes": "Tomatoes",
@@ -179,7 +199,14 @@
       "carrots": "Carrots",
       "broccoli": "Broccoli",
       "lettuce": "Lettuce",
-      "onions": "Onions"
+      "onions": "Onions",
+      "eggplant": "Eggplant",
+      "mushrooms": "Mushrooms",
+      "cauliflower": "Cauliflower",
+      "avocado": "Avocado",
+      "corn": "Corn",
+      "artichokes": "Artichokes",
+      "asparagus": "Asparagus"
     },
     "popularProtein": {
       "chicken": "Chicken",
@@ -189,7 +216,12 @@
       "tofu": "Tofu",
       "legumes": "Legumes",
       "tuna": "Tuna",
-      "cheese": "Cheese"
+      "cheese": "Cheese",
+      "shrimp": "Shrimp",
+      "ham": "Ham",
+      "turkey": "Turkey",
+      "seitan": "Seitan",
+      "tempeh": "Tempeh"
     },
     "popularSpice": {
       "basil": "Basil",
@@ -207,6 +239,12 @@
       "lemon": "Lemon",
       "sesame_oil": "Sesame oil"
     }
+  },
+  "tags": {
+    "highProtein": "High protein",
+    "light": "Light",
+    "comfort": "Comfort food",
+    "mediterranean": "Mediterranean"
   },
   "recipes": {
     "title": "Recipes",

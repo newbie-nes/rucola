@@ -10,10 +10,14 @@ import { matchesKeyIngredient, ingredientsMatch } from '../utils/ingredientMatch
 
 const FOOD_EMOJIS = {
   pasta: '🍝', rice: '🍚', bread: '🍞', couscous: '🫓', quinoa: '🌾', potatoes: '🥔',
+  farro: '🌾', orzo: '🌾', polenta: '🌽', bulgur: '🌾',
   tomatoes: '🍅', zucchini: '🥒', spinach: '🥬', peppers: '🫑', carrots: '🥕',
   broccoli: '🥦', lettuce: '🥗', onions: '🧅',
+  eggplant: '🍆', mushrooms: '🍄', cauliflower: '🥦', avocado: '🥑', corn: '🌽',
+  artichokes: '🌿', asparagus: '🌿',
   chicken: '🍗', beef: '🥩', salmon: '🐟', eggs: '🥚', tofu: '🧈',
-  legumes: '🫘', tuna: '🐠', cheese: '🧀'
+  legumes: '🫘', tuna: '🐠', cheese: '🧀',
+  shrimp: '🦐', ham: '🥓', turkey: '🍗', seitan: '🌾', tempeh: '🫘'
 }
 
 // Pantry staples assumed always available — matched as whole words to avoid
@@ -204,6 +208,26 @@ export default function RecipeDetail() {
             {recipe.tags?.includes('lunchbox') && (
               <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
                 🍱 {t('dashboard.lunchboxFilter')}
+              </span>
+            )}
+            {recipe.tags?.includes('highProtein') && (
+              <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+                💪 {t('tags.highProtein')}
+              </span>
+            )}
+            {recipe.tags?.includes('light') && (
+              <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+                🥗 {t('tags.light')}
+              </span>
+            )}
+            {recipe.tags?.includes('comfort') && (
+              <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+                🫕 {t('tags.comfort')}
+              </span>
+            )}
+            {recipe.tags?.includes('mediterranean') && (
+              <span className="inline-flex items-center gap-1 bg-white/25 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
+                🫒 {t('tags.mediterranean')}
               </span>
             )}
           </div>

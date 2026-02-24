@@ -148,6 +148,22 @@
       "legumes": "Legumi",
       "tuna": "Tonno",
       "cheese": "Formaggio",
+      "shrimp": "Gamberi",
+      "ham": "Prosciutto",
+      "turkey": "Tacchino",
+      "seitan": "Seitan",
+      "tempeh": "Tempeh",
+      "farro": "Farro",
+      "orzo": "Orzo",
+      "polenta": "Polenta",
+      "bulgur": "Bulgur",
+      "eggplant": "Melanzane",
+      "mushrooms": "Funghi",
+      "cauliflower": "Cavolfiore",
+      "avocado": "Avocado",
+      "corn": "Mais",
+      "artichokes": "Carciofi",
+      "asparagus": "Asparagi",
       "basil": "Basilico",
       "parsley": "Prezzemolo",
       "rosemary": "Rosmarino",
@@ -169,7 +185,11 @@
       "bread": "Pane",
       "couscous": "Couscous",
       "quinoa": "Quinoa",
-      "potatoes": "Patate"
+      "potatoes": "Patate",
+      "farro": "Farro",
+      "orzo": "Orzo",
+      "polenta": "Polenta",
+      "bulgur": "Bulgur"
     },
     "popularVegetable": {
       "tomatoes": "Pomodori",
@@ -179,7 +199,14 @@
       "carrots": "Carote",
       "broccoli": "Broccoli",
       "lettuce": "Lattuga",
-      "onions": "Cipolle"
+      "onions": "Cipolle",
+      "eggplant": "Melanzane",
+      "mushrooms": "Funghi",
+      "cauliflower": "Cavolfiore",
+      "avocado": "Avocado",
+      "corn": "Mais",
+      "artichokes": "Carciofi",
+      "asparagus": "Asparagi"
     },
     "popularProtein": {
       "chicken": "Pollo",
@@ -189,7 +216,12 @@
       "tofu": "Tofu",
       "legumes": "Legumi",
       "tuna": "Tonno",
-      "cheese": "Formaggio"
+      "cheese": "Formaggio",
+      "shrimp": "Gamberi",
+      "ham": "Prosciutto",
+      "turkey": "Tacchino",
+      "seitan": "Seitan",
+      "tempeh": "Tempeh"
     },
     "popularSpice": {
       "basil": "Basilico",
@@ -207,6 +239,12 @@
       "lemon": "Limone",
       "sesame_oil": "Olio di sesamo"
     }
+  },
+  "tags": {
+    "highProtein": "Alto in proteine",
+    "light": "Leggera",
+    "comfort": "Comfort food",
+    "mediterranean": "Mediterranea"
   },
   "recipes": {
     "title": "Ricette",
