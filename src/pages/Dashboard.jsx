@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
-import { RefreshCw, ChefHat, Plus, Moon, Star, Send } from 'lucide-react'
+import { RefreshCw, ChefHat, Plus, Moon, Star, Send, ShoppingCart } from 'lucide-react'
 import RecipeCard from '../components/RecipeCard'
 import PageInfoBox from '../components/PageInfoBox'
 import ChefMascot from '../components/ChefMascot'
@@ -15,7 +15,7 @@ export default function Dashboard() {
   const { user, userProfile, updateUserProfile } = useAuth()
   const navigate = useNavigate()
   const [refreshKey, setRefreshKey] = useState(0)
-  const [lunchboxFilter, setLunchboxFilter] = useState(true)
+  const [lunchboxFilter, setLunchboxFilter] = useState(false)
 
   // Inline feedback state
   const [feedbackRating, setFeedbackRating] = useState(0)
@@ -271,9 +271,30 @@ export default function Dashboard() {
 
       <div className="space-y-4">
         {suggested.length > 0 ? (
-          suggested.map(recipe => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))
+          suggested[0]?._noStrictMatch ? (
+            <>
+              {/* Go shopping card */}
+              <div className="card text-center py-6 border-2 border-dashed border-orange-300 bg-orange-50/50">
+                <div className="text-4xl mb-2">🛒</div>
+                <h3 className="font-bold text-orange-700 mb-1">{t('dashboard.goShopping')}</h3>
+                <p className="text-sm text-orange-600 mb-4 px-4">{t('dashboard.goShoppingSubtitle')}</p>
+                <button
+                  onClick={() => navigate('/fridge')}
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  <ShoppingCart size={16} /> {t('dashboard.updateFridge')}
+                </button>
+              </div>
+              {/* Still show best-effort recipes below */}
+              {suggested.map(recipe => (
+                <RecipeCard key={recipe.id} recipe={recipe} />
+              ))}
+            </>
+          ) : (
+            suggested.map(recipe => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))
+          )
         ) : (
           <div className="card text-center py-8">
             <div className="text-4xl mb-3">🍳</div>

@@ -129,7 +129,8 @@ export function AuthProvider({ children }) {
   }
 
   async function updateUserProfile(data) {
-    if (!user) return
+    if (!user) throw new Error('No authenticated user')
+    const previous = userProfile
     const updated = { ...userProfile, ...data }
     setUserProfile(updated)
     // Save to Firestore
@@ -139,14 +140,17 @@ export function AuthProvider({ children }) {
         updatedAt: serverTimestamp()
       }, { merge: true })
     } catch (e) {
-      console.warn('Firestore profile sync failed:', e)
+      console.error('Firestore profile sync failed:', e)
+      setUserProfile(previous)
+      throw e
     }
   }
 
   // Save a meal to Firestore (replaces localStorage meal history)
   async function saveMeal(dateKey, mealData) {
-    if (!user) return
-    const updatedHistory = { ...(userProfile?.mealHistory || {}), [dateKey]: mealData }
+    if (!user) throw new Error('No authenticated user')
+    const previousHistory = userProfile?.mealHistory || {}
+    const updatedHistory = { ...previousHistory, [dateKey]: mealData }
     setUserProfile(prev => ({ ...prev, mealHistory: updatedHistory }))
     try {
       await setDoc(doc(db, 'users', user.uid), {
@@ -154,7 +158,9 @@ export function AuthProvider({ children }) {
         updatedAt: serverTimestamp()
       }, { merge: true })
     } catch (e) {
-      console.warn('Firestore meal save failed:', e)
+      console.error('Firestore meal save failed:', e)
+      setUserProfile(prev => ({ ...prev, mealHistory: previousHistory }))
+      throw e
     }
   }
 

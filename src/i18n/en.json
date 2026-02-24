@@ -33,7 +33,10 @@
     "emailInUse": "This email is already registered",
     "gdprConsent": "I have read and accept the",
     "privacyPolicy": "Privacy Policy",
-    "gdprRequired": "You must accept the Privacy Policy to continue"
+    "gdprRequired": "You must accept the Privacy Policy to continue",
+    "userNotFound": "No account found with this email",
+    "invalidEmail": "Invalid email address",
+    "tooManyRequests": "Too many requests. Try again in a few minutes"
   },
   "onboarding": {
     "welcome": "Hi, I'm Rucola!",
@@ -98,7 +101,10 @@
     "fridgeFirst": "Prioritizing your fridge ingredients",
     "lunchboxFilter": "Lunchbox",
     "lunchboxHint": "Portable recipes for work",
-    "allRecipes": "All"
+    "allRecipes": "All",
+    "goShopping": "Time to go shopping!",
+    "goShoppingSubtitle": "Available recipes need ingredients you don't have. Update your fridge or visit the supermarket!",
+    "updateFridge": "Update your fridge"
   },
   "fridge": {
     "title": "Your fridge",
@@ -279,6 +285,11 @@
     "fridge": "Fridge",
     "history": "History",
     "settings": "Settings"
+  },
+  "errors": {
+    "saveFailed": "Save failed. Check your connection and try again.",
+    "fridgeSaveFailed": "Couldn't save fridge. Please try again.",
+    "generic": "Something went wrong. Please try again."
   },
   "pageInfo": {
     "dashboard": "Here you'll find your personal sous-chef's suggestions! I suggest balanced recipes based on what's in your fridge and your preferences.",

@@ -16,7 +16,21 @@ const FOOD_EMOJIS = {
   legumes: '🫘', tuna: '🐠', cheese: '🧀'
 }
 
-const PANTRY_KEYWORDS = ['sale', 'salt', 'olio', 'oil', 'pepe', 'pepper', 'acqua', 'water', 'aglio', 'garlic', 'zucchero', 'sugar']
+// Pantry staples assumed always available — matched as whole words to avoid
+// false positives like "pepe" matching "peperoni" or "pepper" matching "peppers"
+const PANTRY_KEYWORDS = [
+  'sale', 'salt', 'olio d\'oliva', 'olio di oliva', 'olive oil', 'olio evo', 'olio',
+  'pepe nero', 'black pepper', 'pepe', 'acqua', 'water', 'aglio', 'garlic', 'zucchero', 'sugar'
+]
+function isPantryItem(text) {
+  const lower = text.toLowerCase()
+  // Match longest keywords first, require word boundaries
+  const sorted = [...PANTRY_KEYWORDS].sort((a, b) => b.length - a.length)
+  return sorted.some(kw => {
+    const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    return new RegExp(`(^|\\s)${escaped}(\\s|,|$)`, 'i').test(lower)
+  })
+}
 
 const HERO_GRADIENTS = {
   easy: 'from-emerald-400 via-green-500 to-teal-600',
@@ -95,8 +109,8 @@ export default function RecipeDetail() {
 
   function getIngredientStatus(ingredientText) {
     const lower = ingredientText.toLowerCase()
-    // Check pantry staples first
-    if (PANTRY_KEYWORDS.some(kw => lower.includes(kw))) return 'pantry'
+    // Check pantry staples first (word-boundary match to avoid "pepe" → "peperoni")
+    if (isPantryItem(ingredientText)) return 'pantry'
     // Check against key ingredient aliases (base/vegetable/protein)
     for (const { aliases, status } of keyAliases) {
       if (aliases.some(alias => lower.includes(alias))) return status

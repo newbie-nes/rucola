@@ -23,6 +23,7 @@ export default function Onboarding() {
   const [preferences, setPreferences] = useState([])
   const [mealsPerWeek, setMealsPerWeek] = useState(5)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   function toggleItem(arr, setArr, item) {
     setArr(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item])
@@ -30,15 +31,21 @@ export default function Onboarding() {
 
   async function handleComplete() {
     setLoading(true)
-    await updateUserProfile({
-      diet,
-      allergies,
-      preferences,
-      mealsPerWeek,
-      onboardingComplete: true,
-      fridge: { base: [], vegetable: [], protein: [] }
-    })
-    navigate('/')
+    setError(null)
+    try {
+      await updateUserProfile({
+        diet,
+        allergies,
+        preferences,
+        mealsPerWeek,
+        onboardingComplete: true,
+        fridge: { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+      })
+      navigate('/')
+    } catch (e) {
+      setLoading(false)
+      setError(t('errors.saveFailed'))
+    }
   }
 
   function canProceed() {
@@ -60,6 +67,12 @@ export default function Onboarding() {
             />
           ))}
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
         {/* Step 0: Diet */}
         {step === 0 && (

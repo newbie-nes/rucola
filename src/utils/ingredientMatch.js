@@ -94,7 +94,8 @@ export const SYNONYMS = {
   'spinaci': 'spinach',
   'peperoni': 'peppers',
   'peperone': 'peppers',
-  'peperoncino': 'peppers',
+  'peperoni rossi': 'peppers',
+  'peperoni verdi': 'peppers',
   'carote': 'carrots',
   'carota': 'carrots',
   'cipolla': 'onions',
@@ -113,6 +114,19 @@ export const SYNONYMS = {
   'funghi': 'mushrooms',
   'champignon': 'mushrooms',
   'avocado': 'avocado',
+  'patata': 'potatoes',
+  'patate': 'potatoes',
+  'broccolo': 'broccoli',
+  'peperone rosso': 'peppers',
+  'peperone giallo': 'peppers',
+  'peperone verde': 'peppers',
+  'peperoni rossi': 'peppers',
+  'cipolla rossa': 'onions',
+  'cipolla bianca': 'onions',
+  'cipolla dorata': 'onions',
+  'aglio': 'garlic',
+  'sedano': 'celery',
+  'piselli': 'peas',
 
   // Spices
   'basilico': 'basil',
@@ -148,10 +162,14 @@ export const QUALIFIER_WORDS = [
 ]
 
 /**
- * Normalize an ingredient text by removing qualifiers and returning a clean keyword
+ * Normalize an ingredient text by removing quantities, units, and qualifiers
  */
 export function normalizeIngredient(text) {
   let normalized = text.toLowerCase().trim()
+  // Remove quantities: numbers, fractions, decimals
+  normalized = normalized.replace(/[\d½¼¾⅓⅔.,]+\s*/g, '')
+  // Remove units of measurement (IT + EN)
+  normalized = normalized.replace(/\b(g|gr|kg|ml|l|cl|dl|cucchiai[oa]?|cucchiaino|cucchiaini|tazzina|tazza|fett[ae]|spicchi[o]?|pizzico|q\.?\s?b\.?|tbsp|tsp|cups?|oz|lb|pieces?|slices?|cloves?|pinch|handful)\b/gi, '')
   // Remove qualifier words (longest first to avoid partial removal)
   const sorted = [...QUALIFIER_WORDS].sort((a, b) => b.length - a.length)
   for (const q of sorted) {
@@ -215,6 +233,17 @@ export function ingredientsMatch(fridgeItem, recipeIngredientText) {
   // Check if fridge item's canonical matches inside recipe text or vice versa
   if (ri.includes(fiCanonical) || fiCanonical.includes(normalizedRi)) return true
   if (fi.includes(riCanonical) || riCanonical.includes(normalizedFi)) return true
+
+  // Word-level synonym matching: split both into words, resolve each via SYNONYMS
+  const fiWords = normalizedFi.split(/\s+/).filter(w => w.length > 2)
+  const riWords = normalizedRi.split(/\s+/).filter(w => w.length > 2)
+  for (const fw of fiWords) {
+    const fwCanonical = SYNONYMS[fw] || fw
+    for (const rw of riWords) {
+      const rwCanonical = SYNONYMS[rw] || rw
+      if (fwCanonical === rwCanonical && fwCanonical.length > 2) return true
+    }
+  }
 
   return false
 }

@@ -20,7 +20,15 @@ export default function ForgotPassword() {
       await resetPassword(email)
       setSent(true)
     } catch (err) {
-      setError(err.message)
+      if (err.code === 'auth/user-not-found') {
+        setError(t('auth.userNotFound'))
+      } else if (err.code === 'auth/invalid-email') {
+        setError(t('auth.invalidEmail'))
+      } else if (err.code === 'auth/too-many-requests') {
+        setError(t('auth.tooManyRequests'))
+      } else {
+        setError(t('errors.generic'))
+      }
     }
     setLoading(false)
   }

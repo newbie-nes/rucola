@@ -42,13 +42,23 @@ export default function Fridge() {
   const [savedToast, setSavedToast] = useState(false)
   const [newItems, setNewItems] = useState([])
 
-  const fridge = userProfile?.fridge || { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+  // Local fridge state - only persisted on explicit Save
+  const [localFridge, setLocalFridge] = useState(
+    userProfile?.fridge || { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+  )
+  const [saveError, setSaveError] = useState(null)
+  const [saving, setSaving] = useState(false)
 
-  // Track initial fridge state on mount
+  const fridge = localFridge
+
+  // Sync local state when userProfile loads/changes from Firestore
   const initialFridgeRef = useRef(null)
   useEffect(() => {
-    if (userProfile?.fridge && !initialFridgeRef.current) {
-      initialFridgeRef.current = JSON.parse(JSON.stringify(userProfile.fridge))
+    if (userProfile?.fridge) {
+      if (!initialFridgeRef.current) {
+        initialFridgeRef.current = JSON.parse(JSON.stringify(userProfile.fridge))
+        setLocalFridge(userProfile.fridge)
+      }
     }
   }, [userProfile?.fridge])
 
@@ -66,13 +76,22 @@ export default function Fridge() {
     return items
   }
 
-  function handleSaveFridge() {
-    const added = getNewItems()
-    setNewItems(added)
-    setSavedToast(true)
-    // Update initial ref to current state
-    initialFridgeRef.current = JSON.parse(JSON.stringify(fridge))
-    setTimeout(() => setSavedToast(false), 3000)
+  async function handleSaveFridge() {
+    setSaving(true)
+    setSaveError(null)
+    try {
+      await updateUserProfile({ fridge: localFridge })
+      const added = getNewItems()
+      setNewItems(added)
+      setSavedToast(true)
+      initialFridgeRef.current = JSON.parse(JSON.stringify(localFridge))
+      setTimeout(() => setSavedToast(false), 3000)
+    } catch (e) {
+      setSaveError(t('errors.fridgeSaveFailed'))
+      setTimeout(() => setSaveError(null), 4000)
+    } finally {
+      setSaving(false)
+    }
   }
 
   function toggleIngredient(category, item) {
@@ -80,7 +99,7 @@ export default function Fridge() {
     const updated = current.includes(item)
       ? current.filter(i => i !== item)
       : [...current, item]
-    updateUserProfile({ fridge: { ...fridge, [category]: updated } })
+    setLocalFridge(prev => ({ ...prev, [category]: updated }))
   }
 
   function addSmart() {
@@ -89,15 +108,20 @@ export default function Fridge() {
     const category = autoCategorize(item)
     const current = fridge[category] || []
     if (!current.includes(item)) {
-      updateUserProfile({
-        fridge: { ...fridge, [category]: [...current, item] }
-      })
+      setLocalFridge(prev => ({ ...prev, [category]: [...current, item] }))
     }
     setSmartInput('')
   }
 
-  function clearAll() {
-    updateUserProfile({ fridge: { base: [], vegetable: [], protein: [], spice: [], altro: [] } })
+  async function clearAll() {
+    const emptyFridge = { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+    setLocalFridge(emptyFridge)
+    try {
+      await updateUserProfile({ fridge: emptyFridge })
+    } catch (e) {
+      setSaveError(t('errors.fridgeSaveFailed'))
+      setTimeout(() => setSaveError(null), 4000)
+    }
   }
 
   const totalItems = CATEGORIES.reduce((sum, cat) => sum + (fridge[cat]?.length || 0), 0)
@@ -206,10 +230,18 @@ export default function Fridge() {
       {totalItems > 0 && (
         <button
           onClick={handleSaveFridge}
+          disabled={saving}
           className="w-full mb-4 btn-primary flex items-center justify-center gap-2"
         >
-          <Save size={18} /> {t('fridge.saveFridge')}
+          <Save size={18} /> {saving ? '...' : t('fridge.saveFridge')}
         </button>
+      )}
+
+      {/* Error toast */}
+      {saveError && (
+        <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm animate-fade-in">
+          {saveError}
+        </div>
       )}
 
       {/* Save confirmation toast */}

@@ -3998,14 +3998,25 @@ export function getRecipesForUser(userProfile, fridgeItems = [], yesterdayRecipe
     };
   });
 
+  // Step 7: Filter by max 1 missing KEY ingredient (base/vegetable/protein)
+  // _fridgeMatch.missing already tracks which key ingredients are not in fridge
+  const strictFiltered = scored.filter(r => r._fridgeMatch.missing.length <= 1);
+
   // Sort by score descending, then prepTime ascending
-  scored.sort((a, b) => {
+  const toSort = strictFiltered.length > 0 ? strictFiltered : scored;
+  toSort.sort((a, b) => {
     if (b._score !== a._score) return b._score - a._score;
     return a.prepTime - b.prepTime;
   });
 
+  // Flag recipes if no strict match found (all need >1 key ingredient)
+  const noStrictMatch = strictFiltered.length === 0;
+
   // Keep _fridgeMatch but remove _score
-  return scored.map(({ _score, ...recipe }) => recipe);
+  return toSort.map(({ _score, ...recipe }) => ({
+    ...recipe,
+    ...(noStrictMatch ? { _noStrictMatch: true } : {})
+  }));
 }
 
 export default recipes;

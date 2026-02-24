@@ -33,7 +33,10 @@
     "emailInUse": "Questa email \u00e8 gi\u00e0 registrata",
     "gdprConsent": "Ho letto e accetto la",
     "privacyPolicy": "Privacy Policy",
-    "gdprRequired": "Devi accettare la Privacy Policy per continuare"
+    "gdprRequired": "Devi accettare la Privacy Policy per continuare",
+    "userNotFound": "Nessun account trovato con questa email",
+    "invalidEmail": "Indirizzo email non valido",
+    "tooManyRequests": "Troppe richieste. Riprova tra qualche minuto"
   },
   "onboarding": {
     "welcome": "Ciao, sono Rucola!",
@@ -98,7 +101,10 @@
     "fridgeFirst": "Priorità agli ingredienti nel tuo frigo",
     "lunchboxFilter": "Pranzo al sacco",
     "lunchboxHint": "Ricette portabili per il lavoro",
-    "allRecipes": "Tutte"
+    "allRecipes": "Tutte",
+    "goShopping": "Tempo di fare la spesa!",
+    "goShoppingSubtitle": "Le ricette disponibili richiedono ingredienti che non hai. Aggiorna il frigo o fai un salto al supermercato!",
+    "updateFridge": "Aggiorna il frigo"
   },
   "fridge": {
     "title": "Il tuo frigo",
@@ -279,6 +285,11 @@
     "fridge": "Frigo",
     "history": "Storico",
     "settings": "Impostazioni"
+  },
+  "errors": {
+    "saveFailed": "Salvataggio non riuscito. Controlla la connessione e riprova.",
+    "fridgeSaveFailed": "Impossibile salvare il frigo. Riprova.",
+    "generic": "Qualcosa e' andato storto. Riprova."
   },
   "pageInfo": {
     "dashboard": "Qui trovi i suggerimenti del tuo sous-chef personale! Ti propongo ricette bilanciate in base a cosa hai in frigo e alle tue preferenze.",

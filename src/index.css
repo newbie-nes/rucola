@@ -13,7 +13,7 @@
   --color-warm-text: #3E2723;
   --color-warm-muted: #8D6E63;
   --color-danger: #EF5350;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Nunito', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
