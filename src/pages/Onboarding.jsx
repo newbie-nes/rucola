@@ -8,10 +8,13 @@ const STEPS = ['diet', 'allergies', 'preferences', 'meals', 'calendar']
 
 const DIETS = ['omnivore', 'vegetarian', 'vegan']
 const ALLERGIES = ['gluten', 'lactose', 'nuts', 'shellfish', 'eggs', 'soy']
-const PREFERENCES = ['noSpicy', 'noRawFish', 'largePortion', 'smallPortion', 'quick', 'budgetFriendly']
+const PREFERENCES = ['noSpicy', 'noRawFish', 'largePortion', 'smallPortion', 'quick', 'budgetFriendly', 'highProtein']
 const DIET_EMOJIS = { omnivore: '🥩', vegetarian: '🥚', vegan: '🌱' }
 const ALLERGY_EMOJIS = { gluten: '🌾', lactose: '🥛', nuts: '🥜', shellfish: '🦐', eggs: '🥚', soy: '🫘' }
-const PREF_EMOJIS = { noSpicy: '🌶️', noRawFish: '🐟', largePortion: '🍽️', smallPortion: '🥗', quick: '⏱️', budgetFriendly: '💰' }
+const PREF_EMOJIS = { noSpicy: '🌶️', noRawFish: '🐟', largePortion: '🍽️', smallPortion: '🥗', quick: '⏱️', budgetFriendly: '💰', highProtein: '💪' }
+
+// Map preferences to recipe tags for scoring
+const PREF_TO_TAGS = { quick: 'quick', budgetFriendly: 'budget', highProtein: 'highProtein' }
 
 export default function Onboarding() {
   const { t } = useTranslation()
@@ -33,10 +36,14 @@ export default function Onboarding() {
     setLoading(true)
     setError(null)
     try {
+      const preferredTags = preferences
+        .filter(p => PREF_TO_TAGS[p])
+        .map(p => PREF_TO_TAGS[p])
       const profileData = {
         diet,
         allergies,
         preferences,
+        preferredTags,
         mealsPerWeek,
         onboardingComplete: true,
       }

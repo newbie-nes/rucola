@@ -22,10 +22,6 @@ export default function Dashboard() {
   const [lunchboxFilter, setLunchboxFilter] = useState(() => {
     return sessionStorage.getItem('rucola_dashboard_lunchboxFilter') === 'true'
   })
-  const [highProteinFilter, setHighProteinFilter] = useState(() => {
-    return sessionStorage.getItem('rucola_dashboard_highProteinFilter') === 'true'
-  })
-
   // Inline feedback state
   const [feedbackRating, setFeedbackRating] = useState(0)
   const [feedbackHovered, setFeedbackHovered] = useState(0)
@@ -43,10 +39,6 @@ export default function Dashboard() {
   useEffect(() => {
     sessionStorage.setItem('rucola_dashboard_lunchboxFilter', String(lunchboxFilter))
   }, [lunchboxFilter])
-
-  useEffect(() => {
-    sessionStorage.setItem('rucola_dashboard_highProteinFilter', String(highProteinFilter))
-  }, [highProteinFilter])
 
   const name = user?.displayName?.split(' ')[0] || ''
 
@@ -77,14 +69,23 @@ export default function Dashboard() {
     return t('dashboard.greetingEvening', { name })
   }, [hour, name, t])
 
+  // Stable serialized keys to avoid recalculating on every userProfile reference change
+  const fridgeKey = useMemo(() => {
+    const f = userProfile?.fridge || {}
+    return JSON.stringify([f.base, f.vegetable, f.protein, f.spice, f.altro])
+  }, [userProfile?.fridge])
+
+  const profileKey = useMemo(() => {
+    return JSON.stringify([userProfile?.diet, userProfile?.allergies, userProfile?.preferences, userProfile?.dislikedIngredients, userProfile?.maxDifficulty, userProfile?.maxPrepTime, userProfile?.preferredTags])
+  }, [userProfile?.diet, userProfile?.allergies, userProfile?.preferences, userProfile?.dislikedIngredients, userProfile?.maxDifficulty, userProfile?.maxPrepTime, userProfile?.preferredTags])
+
   const suggested = useMemo(() => {
     if (!userProfile) return []
     const fridge = userProfile.fridge || { base: [], vegetable: [], protein: [], spice: [], altro: [] }
     const fridgeItems = [...fridge.base, ...fridge.vegetable, ...fridge.protein, ...(fridge.spice || []), ...(fridge.altro || [])]
     const yesterdayId = yesterdayMeal?.recipeId || null
     const all = getRecipesForUser(userProfile, fridgeItems, yesterdayId)
-    let filtered = lunchboxFilter ? all.filter(r => r.tags && r.tags.includes('lunchbox')) : all
-    if (highProteinFilter) filtered = filtered.filter(r => r.tags && r.tags.includes('highProtein'))
+    const filtered = lunchboxFilter ? all.filter(r => r.tags && r.tags.includes('lunchbox')) : all
 
     // Seed deterministico: stesse ricette finche' non cambia giorno/utente/refreshKey
     const seed = hashStringToInt(`${toLocalDateKey()}_${user?.uid || 'anon'}_${refreshKey}`)
@@ -103,7 +104,7 @@ export default function Dashboard() {
     ]
 
     return prioritized.slice(0, 3)
-  }, [userProfile, refreshKey, yesterdayMeal, lunchboxFilter, highProteinFilter, user])
+  }, [fridgeKey, profileKey, refreshKey, yesterdayMeal, lunchboxFilter, user])
 
   const tip = useMemo(() => {
     const msgs = [
@@ -278,8 +279,8 @@ export default function Dashboard() {
         </button>
       )}
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      {/* Lunchbox filter */}
+      <div className="flex gap-2 mb-4">
         <button
           onClick={() => setLunchboxFilter(false)}
           className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
@@ -299,16 +300,6 @@ export default function Dashboard() {
           }`}
         >
           🍱 {t('dashboard.lunchboxFilter')}
-        </button>
-        <button
-          onClick={() => setHighProteinFilter(prev => !prev)}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-            highProteinFilter
-              ? 'bg-primary text-white shadow-md'
-              : 'bg-gray-100 text-warm-muted hover:bg-gray-200'
-          }`}
-        >
-          💪 {t('dashboard.highProteinFilter')}
         </button>
       </div>
 

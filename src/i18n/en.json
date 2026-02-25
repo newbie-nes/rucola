@@ -66,7 +66,8 @@
       "largePortion": "Large portions",
       "smallPortion": "Light portions",
       "quick": "Quick recipes (under 20 min)",
-      "budgetFriendly": "Budget-friendly meals"
+      "budgetFriendly": "Budget-friendly meals",
+      "highProtein": "High protein"
     },
     "mealsTitle": "How many meals do you want to plan?",
     "mealsSubtitle": "Choose how many meals per week you'd like me to suggest",
