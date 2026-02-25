@@ -15,13 +15,13 @@ const PREF_EMOJIS = { noSpicy: '🌶️', noRawFish: '🐟', largePortion: '🍽
 
 export default function Onboarding() {
   const { t } = useTranslation()
-  const { user, updateUserProfile } = useAuth()
+  const { user, userProfile, updateUserProfile } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
-  const [diet, setDiet] = useState('')
-  const [allergies, setAllergies] = useState([])
-  const [preferences, setPreferences] = useState([])
-  const [mealsPerWeek, setMealsPerWeek] = useState(5)
+  const [diet, setDiet] = useState(userProfile?.diet || '')
+  const [allergies, setAllergies] = useState(userProfile?.allergies || [])
+  const [preferences, setPreferences] = useState(userProfile?.preferences || [])
+  const [mealsPerWeek, setMealsPerWeek] = useState(userProfile?.mealsPerWeek || 5)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -33,15 +33,18 @@ export default function Onboarding() {
     setLoading(true)
     setError(null)
     try {
-      await updateUserProfile({
+      const profileData = {
         diet,
         allergies,
         preferences,
         mealsPerWeek,
         onboardingComplete: true,
-        fridge: { base: [], vegetable: [], protein: [], spice: [], altro: [] }
-      })
-      navigate('/')
+      }
+      if (!userProfile?.fridge) {
+        profileData.fridge = { base: [], vegetable: [], protein: [], spice: [], altro: [] }
+      }
+      await updateUserProfile(profileData)
+      navigate(userProfile?.onboardingComplete ? '/settings' : '/')
     } catch (e) {
       setLoading(false)
       setError(t('errors.saveFailed'))
@@ -187,6 +190,10 @@ export default function Onboarding() {
         <div className="flex justify-between mt-10">
           {step > 0 ? (
             <button onClick={() => setStep(s => s - 1)} className="flex items-center gap-1 text-warm-muted font-medium">
+              <ArrowLeft size={18} /> {t('common.back')}
+            </button>
+          ) : userProfile?.onboardingComplete ? (
+            <button onClick={() => navigate('/settings')} className="flex items-center gap-1 text-warm-muted font-medium">
               <ArrowLeft size={18} /> {t('common.back')}
             </button>
           ) : <div />}
