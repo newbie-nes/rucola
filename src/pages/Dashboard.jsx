@@ -7,7 +7,7 @@ import RecipeCard from '../components/RecipeCard'
 import PageInfoBox from '../components/PageInfoBox'
 import ChefMascot from '../components/ChefMascot'
 import { getRecipesForUser } from '../data/recipes'
-import { toLocalDateKey, fisherYatesShuffle } from '../utils/dateHelpers'
+import { toLocalDateKey, seededShuffle, mulberry32, hashStringToInt } from '../utils/dateHelpers'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 
@@ -15,8 +15,13 @@ export default function Dashboard() {
   const { t } = useTranslation()
   const { user, userProfile, updateUserProfile, migrateMealEntry } = useAuth()
   const navigate = useNavigate()
-  const [refreshKey, setRefreshKey] = useState(0)
-  const [lunchboxFilter, setLunchboxFilter] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(() => {
+    const saved = sessionStorage.getItem('rucola_dashboard_refreshKey')
+    return saved ? Number(saved) : 0
+  })
+  const [lunchboxFilter, setLunchboxFilter] = useState(() => {
+    return sessionStorage.getItem('rucola_dashboard_lunchboxFilter') === 'true'
+  })
 
   // Inline feedback state
   const [feedbackRating, setFeedbackRating] = useState(0)
@@ -27,6 +32,14 @@ export default function Dashboard() {
   const hour = new Date().getHours()
   const isEvening = hour >= 19
   const [showDinner, setShowDinner] = useState(false)
+
+  useEffect(() => {
+    sessionStorage.setItem('rucola_dashboard_refreshKey', String(refreshKey))
+  }, [refreshKey])
+
+  useEffect(() => {
+    sessionStorage.setItem('rucola_dashboard_lunchboxFilter', String(lunchboxFilter))
+  }, [lunchboxFilter])
 
   const name = user?.displayName?.split(' ')[0] || ''
 
@@ -65,6 +78,10 @@ export default function Dashboard() {
     const all = getRecipesForUser(userProfile, fridgeItems, yesterdayId)
     const filtered = lunchboxFilter ? all.filter(r => r.tags && r.tags.includes('lunchbox')) : all
 
+    // Seed deterministico: stesse ricette finche' non cambia giorno/utente/refreshKey
+    const seed = hashStringToInt(`${toLocalDateKey()}_${user?.uid || 'anon'}_${refreshKey}`)
+    const rng = mulberry32(seed)
+
     // Separa per tier di qualita'
     const perfect = filtered.filter(r => r._fridgeMatch.missing.length === 0)
     const almost = filtered.filter(r => r._fridgeMatch.missing.length === 1)
@@ -72,21 +89,25 @@ export default function Dashboard() {
 
     // Combina: SEMPRE prima le perfette, poi quasi-perfette, poi il resto
     const prioritized = [
-      ...fisherYatesShuffle(perfect),
-      ...fisherYatesShuffle(almost),
-      ...fisherYatesShuffle(rest)
+      ...seededShuffle(perfect, rng),
+      ...seededShuffle(almost, rng),
+      ...seededShuffle(rest, rng)
     ]
 
     return prioritized.slice(0, 3)
-  }, [userProfile, refreshKey, yesterdayMeal, lunchboxFilter])
+  }, [userProfile, refreshKey, yesterdayMeal, lunchboxFilter, user])
 
-  const souschefMessages = [
-    t('dashboard.souschefTip1'),
-    t('dashboard.souschefTip2'),
-    t('dashboard.souschefTip3'),
-    t('dashboard.souschefTip4')
-  ]
-  const tip = souschefMessages[Math.floor(Math.random() * souschefMessages.length)]
+  const tip = useMemo(() => {
+    const msgs = [
+      t('dashboard.souschefTip1'),
+      t('dashboard.souschefTip2'),
+      t('dashboard.souschefTip3'),
+      t('dashboard.souschefTip4')
+    ]
+    const tipSeed = hashStringToInt(`tip_${toLocalDateKey()}_${user?.uid || 'anon'}`)
+    const tipRng = mulberry32(tipSeed)
+    return msgs[Math.floor(tipRng() * msgs.length)]
+  }, [t, user])
 
   const fridgeEmpty = !userProfile?.fridge ||
     (userProfile.fridge.base?.length === 0 &&

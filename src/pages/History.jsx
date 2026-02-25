@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import PageInfoBox from '../components/PageInfoBox'
@@ -9,15 +10,20 @@ const DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MONTHS_IT = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre']
 const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-function MealRow({ meal, label, onDelete }) {
+function MealRow({ meal, label, onDelete, onClickRecipe }) {
   if (!meal) return null
   return (
     <div className="flex items-center gap-3 py-2">
-      <span className="text-3xl">{meal.emoji || '🍽️'}</span>
-      <div className="flex-1">
-        <p className="font-semibold">{meal.recipeName}</p>
-        <p className="text-sm text-warm-muted">{label}</p>
-      </div>
+      <button
+        onClick={onClickRecipe}
+        className="flex items-center gap-3 flex-1 text-left"
+      >
+        <span className="text-3xl">{meal.emoji || '🍽️'}</span>
+        <div className="flex-1">
+          <p className="font-semibold">{meal.recipeName}</p>
+          <p className="text-sm text-warm-muted">{label}</p>
+        </div>
+      </button>
       {onDelete && (
         <button
           onClick={onDelete}
@@ -32,6 +38,7 @@ function MealRow({ meal, label, onDelete }) {
 
 export default function History() {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const { userProfile, deleteMeal, migrateMealEntry } = useAuth()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDay, setSelectedDay] = useState(null)
@@ -171,11 +178,13 @@ export default function History() {
                   meal={entry.lunch}
                   label={t('history.lunch')}
                   onDelete={() => handleDeleteRequest(dk, 'lunch')}
+                  onClickRecipe={() => entry.lunch?.recipeId && navigate(`/recipe/${entry.lunch.recipeId}`)}
                 />
                 <MealRow
                   meal={entry.dinner}
                   label={t('history.dinner')}
                   onDelete={() => handleDeleteRequest(dk, 'dinner')}
+                  onClickRecipe={() => entry.dinner?.recipeId && navigate(`/recipe/${entry.dinner.recipeId}`)}
                 />
               </div>
             ) : (

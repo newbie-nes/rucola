@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import {
-  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, ChevronDown, Trash2, Shield, MessageCircle, Send, Star, Info
+  Globe, Bell, Calendar, User, LogOut, ChevronRight, ChevronDown, Trash2, Shield, MessageCircle, Send, Star, Info
 } from 'lucide-react'
 import PageInfoBox from '../components/PageInfoBox'
 
@@ -120,15 +120,9 @@ export default function Settings() {
         />
 
         <SettingRow
-          icon={<UtensilsCrossed size={20} />}
-          label={t('settings.dietPreferences')}
-          value={dietLabel}
-          onClick={() => navigate('/onboarding')}
-        />
-
-        <SettingRow
           icon={<User size={20} />}
           label={t('settings.editProfile')}
+          value={dietLabel}
           onClick={() => navigate('/onboarding')}
         />
       </div>
