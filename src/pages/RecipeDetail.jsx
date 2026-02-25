@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import recipes from '../data/recipes'
-import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin, Star, Send } from 'lucide-react'
+import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin, Star, Send, X, Sun, Moon } from 'lucide-react'
+import { toLocalDateKey } from '../utils/dateHelpers'
 import { matchesKeyIngredient, ingredientsMatch } from '../utils/ingredientMatch'
 
 const FOOD_EMOJIS = {
@@ -53,6 +54,12 @@ export default function RecipeDetail() {
   const [fbHovered, setFbHovered] = useState(0)
   const [fbComment, setFbComment] = useState('')
   const [fbSubmitted, setFbSubmitted] = useState(false)
+
+  // Calendar modal state
+  const [showCalendarModal, setShowCalendarModal] = useState(false)
+  const [selectedMealType, setSelectedMealType] = useState(new Date().getHours() >= 17 ? 'dinner' : 'lunch')
+  const [calendarSaving, setCalendarSaving] = useState(false)
+  const [calendarSaved, setCalendarSaved] = useState(false)
 
   const recipe = recipes.find(r => r.id === Number(id))
   if (!recipe) {
@@ -135,18 +142,32 @@ export default function RecipeDetail() {
   // Collect ALL missing ingredients (not just key ones) for shopping card
   const allMissingIngredients = classifiedIngredients.filter(ing => ing.status === 'missing')
 
-  function addToCalendar() {
-    const today = new Date().toISOString().split('T')[0]
-    const hour = new Date().getHours()
-    const mealType = hour >= 19 ? 'dinner' : 'lunch'
+  function openCalendarModal() {
+    setSelectedMealType(new Date().getHours() >= 17 ? 'dinner' : 'lunch')
+    setCalendarSaved(false)
+    setShowCalendarModal(true)
+  }
 
-    saveMeal(today, {
-      recipeId: recipe.id,
-      recipeName: recipe.name[lang],
-      emoji: recipe.emoji,
-      type: mealType
-    })
-    navigate('/')
+  async function confirmAddToCalendar() {
+    const today = toLocalDateKey()
+    setCalendarSaving(true)
+    try {
+      await saveMeal(today, selectedMealType, {
+        recipeId: recipe.id,
+        recipeName: recipe.name[lang],
+        emoji: recipe.emoji
+      })
+      setCalendarSaved(true)
+      setTimeout(() => {
+        setShowCalendarModal(false)
+        navigate('/')
+      }, 800)
+    } catch (e) {
+      console.error('Save meal failed:', e)
+      alert(t('errors.saveFailed'))
+    } finally {
+      setCalendarSaving(false)
+    }
   }
 
   async function submitRecipeFeedback() {
@@ -395,7 +416,7 @@ export default function RecipeDetail() {
         </div>
 
         {/* ========== ADD TO CALENDAR ========== */}
-        <button onClick={addToCalendar} className="btn-primary w-full flex items-center justify-center gap-2 mb-6">
+        <button onClick={openCalendarModal} className="btn-primary w-full flex items-center justify-center gap-2 mb-6">
           <CalendarPlus size={20} /> {t('dashboard.addToCalendar')}
         </button>
 
@@ -447,6 +468,79 @@ export default function RecipeDetail() {
           )}
         </div>
       </div>
+
+      {/* ========== CALENDAR CONFIRMATION MODAL ========== */}
+      {showCalendarModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 px-4 pb-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl animate-in slide-in-from-bottom">
+            {calendarSaved ? (
+              <div className="text-center py-6">
+                <div className="text-5xl mb-3">✅</div>
+                <p className="font-bold text-green-600 text-lg">{t('calendar.savedSuccess')}</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold">{t('calendar.confirmTitle')}</h3>
+                  <button onClick={() => setShowCalendarModal(false)} className="text-warm-muted">
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Recipe preview */}
+                <div className="flex items-center gap-3 mb-4 bg-warm-bg rounded-xl p-3">
+                  <span className="text-3xl">{recipe.emoji}</span>
+                  <div>
+                    <p className="font-semibold">{recipe.name[lang]}</p>
+                    <p className="text-xs text-warm-muted">{t('calendar.confirmSubtitle')}</p>
+                  </div>
+                </div>
+
+                {/* Meal type selector */}
+                <div className="flex gap-3 mb-6">
+                  <button
+                    onClick={() => setSelectedMealType('lunch')}
+                    className={`flex-1 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+                      selectedMealType === 'lunch'
+                        ? 'bg-amber-500 text-white shadow-md'
+                        : 'bg-gray-100 text-warm-muted'
+                    }`}
+                  >
+                    <Sun size={18} /> {t('history.lunch')}
+                  </button>
+                  <button
+                    onClick={() => setSelectedMealType('dinner')}
+                    className={`flex-1 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+                      selectedMealType === 'dinner'
+                        ? 'bg-indigo-500 text-white shadow-md'
+                        : 'bg-gray-100 text-warm-muted'
+                    }`}
+                  >
+                    <Moon size={18} /> {t('history.dinner')}
+                  </button>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowCalendarModal(false)}
+                    className="flex-1 py-2.5 rounded-xl bg-gray-100 font-medium text-warm-text"
+                  >
+                    {t('common.cancel')}
+                  </button>
+                  <button
+                    onClick={confirmAddToCalendar}
+                    disabled={calendarSaving}
+                    className="flex-1 py-2.5 rounded-xl bg-primary text-white font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <CalendarPlus size={16} /> {t('common.confirm')}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

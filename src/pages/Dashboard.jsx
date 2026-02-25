@@ -7,12 +7,13 @@ import RecipeCard from '../components/RecipeCard'
 import PageInfoBox from '../components/PageInfoBox'
 import ChefMascot from '../components/ChefMascot'
 import { getRecipesForUser } from '../data/recipes'
+import { toLocalDateKey, fisherYatesShuffle } from '../utils/dateHelpers'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 
 export default function Dashboard() {
   const { t } = useTranslation()
-  const { user, userProfile, updateUserProfile } = useAuth()
+  const { user, userProfile, updateUserProfile, migrateMealEntry } = useAuth()
   const navigate = useNavigate()
   const [refreshKey, setRefreshKey] = useState(0)
   const [lunchboxFilter, setLunchboxFilter] = useState(false)
@@ -33,15 +34,19 @@ export default function Dashboard() {
   const yesterdayMeal = useMemo(() => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
-    const key = yesterday.toISOString().split('T')[0]
+    const key = toLocalDateKey(yesterday)
     const history = userProfile?.mealHistory || {}
-    return history[key] || null
-  }, [userProfile])
+    const raw = history[key]
+    if (!raw) return null
+    const migrated = migrateMealEntry(raw)
+    // Prefer dinner, fallback to lunch
+    return migrated?.dinner || migrated?.lunch || null
+  }, [userProfile, migrateMealEntry])
 
   // Check if feedback already given today (stored in profile)
   const feedbackAlreadyGiven = useMemo(() => {
     const lastFeedback = userProfile?.lastFeedbackDate
-    return lastFeedback === new Date().toDateString()
+    return lastFeedback === toLocalDateKey()
   }, [userProfile])
 
   const showFeedbackForm = yesterdayMeal && !feedbackAlreadyGiven && !feedbackSubmitted
@@ -59,8 +64,20 @@ export default function Dashboard() {
     const yesterdayId = yesterdayMeal?.recipeId || null
     const all = getRecipesForUser(userProfile, fridgeItems, yesterdayId)
     const filtered = lunchboxFilter ? all.filter(r => r.tags && r.tags.includes('lunchbox')) : all
-    const shuffled = [...filtered].sort(() => Math.random() - 0.5 + refreshKey * 0)
-    return shuffled.slice(0, 3)
+
+    // Separa per tier di qualita'
+    const perfect = filtered.filter(r => r._fridgeMatch.missing.length === 0)
+    const almost = filtered.filter(r => r._fridgeMatch.missing.length === 1)
+    const rest = filtered.filter(r => r._fridgeMatch.missing.length > 1)
+
+    // Combina: SEMPRE prima le perfette, poi quasi-perfette, poi il resto
+    const prioritized = [
+      ...fisherYatesShuffle(perfect),
+      ...fisherYatesShuffle(almost),
+      ...fisherYatesShuffle(rest)
+    ]
+
+    return prioritized.slice(0, 3)
   }, [userProfile, refreshKey, yesterdayMeal, lunchboxFilter])
 
   const souschefMessages = [
@@ -100,7 +117,7 @@ export default function Dashboard() {
     }
 
     // Mark feedback as given today (in profile)
-    await updateUserProfile({ lastFeedbackDate: new Date().toDateString() })
+    await updateUserProfile({ lastFeedbackDate: toLocalDateKey() })
     setFeedbackSubmitted(true)
   }
 

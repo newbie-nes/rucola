@@ -279,7 +279,10 @@
     "noMeals": "Nessun pasto registrato ancora. Inizia a cucinare!",
     "mealDetails": "Dettagli del pasto",
     "lunch": "Pranzo",
-    "dinner": "Cena"
+    "dinner": "Cena",
+    "removeMeal": "Rimuovi pasto",
+    "removeConfirmTitle": "Rimuovere questo pasto?",
+    "removeConfirmText": "Il pasto verra' rimosso dal calendario."
   },
   "feedback": {
     "title": "Com'\u00e8 andato?",
@@ -307,7 +310,21 @@
     "deleteAccount": "Elimina account",
     "deleteConfirm": "Sei sicuro? Tutti i tuoi dati verranno eliminati permanentemente.",
     "privacyPolicy": "Privacy Policy",
-    "accountDeleted": "Account eliminato"
+    "accountDeleted": "Account eliminato",
+    "comingSoon": "In arrivo! Ci stiamo lavorando",
+    "feedback": "Lascia un feedback",
+    "feedbackSubtitle": "Aiutaci a migliorare Rucola",
+    "macroInfoTitle": "Cosa sono Base, Proteine, Verdure?",
+    "macroInfoSubtitle": "Scopri come Rucola bilancia i tuoi pasti",
+    "macroBase": "Base (Carboidrati)",
+    "macroBaseDesc": "La base energetica del piatto. Fornisce carboidrati complessi per energia duratura.",
+    "macroBaseExamples": "Es: pasta, riso, pane, couscous, quinoa, patate, farro, orzo, polenta",
+    "macroProtein": "Proteine",
+    "macroProteinDesc": "Essenziali per muscoli e sazieta'. Ogni pasto dovrebbe avere una fonte proteica.",
+    "macroProteinExamples": "Es: pollo, pesce, uova, legumi, tofu, formaggio, seitan, tempeh",
+    "macroVegetable": "Verdure",
+    "macroVegetableDesc": "Vitamine, minerali e fibre. Rendono il piatto completo e colorato!",
+    "macroVegetableExamples": "Es: zucchine, pomodori, spinaci, peperoni, broccoli, carote, melanzane"
   },
   "shopping": {
     "missingTitle": "Ingredienti da comprare",
@@ -324,8 +341,16 @@
     "history": "Storico",
     "settings": "Impostazioni"
   },
+  "splash": {
+    "subtitle": "Il tuo sous-chef personale"
+  },
+  "calendar": {
+    "confirmTitle": "Aggiungi al calendario",
+    "confirmSubtitle": "Scegli se e' per pranzo o cena",
+    "savedSuccess": "Aggiunto al calendario!"
+  },
   "errors": {
-    "saveFailed": "Salvataggio non riuscito. Controlla la connessione e riprova.",
+    "saveFailed": "Errore nel salvataggio. Riprova.",
     "fridgeSaveFailed": "Impossibile salvare il frigo. Riprova.",
     "generic": "Qualcosa e' andato storto. Riprova."
   },

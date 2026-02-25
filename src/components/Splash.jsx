@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import logo from '../assets/logo.png'
 
 export default function Splash() {
+  const { t } = useTranslation()
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function Splash() {
         <h1 className="text-4xl font-black text-primary tracking-tight">
           Rucola
         </h1>
-        <p className="text-warm-muted text-sm mt-1 font-medium">Il tuo sous-chef personale</p>
+        <p className="text-warm-muted text-sm mt-1 font-medium">{t('splash.subtitle')}</p>
       </div>
 
       {/* Loading dots */}

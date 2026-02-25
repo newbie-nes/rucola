@@ -279,7 +279,10 @@
     "noMeals": "No meals logged yet. Let's start cooking!",
     "mealDetails": "Meal details",
     "lunch": "Lunch",
-    "dinner": "Dinner"
+    "dinner": "Dinner",
+    "removeMeal": "Remove meal",
+    "removeConfirmTitle": "Remove this meal?",
+    "removeConfirmText": "The meal will be removed from the calendar."
   },
   "feedback": {
     "title": "How was it?",
@@ -307,7 +310,21 @@
     "deleteAccount": "Delete account",
     "deleteConfirm": "Are you sure? All your data will be permanently deleted.",
     "privacyPolicy": "Privacy Policy",
-    "accountDeleted": "Account deleted"
+    "accountDeleted": "Account deleted",
+    "comingSoon": "Coming soon! We're working on it",
+    "feedback": "Leave feedback",
+    "feedbackSubtitle": "Help us improve Rucola",
+    "macroInfoTitle": "What are Base, Protein, Vegetables?",
+    "macroInfoSubtitle": "Learn how Rucola balances your meals",
+    "macroBase": "Base (Carbs)",
+    "macroBaseDesc": "The energetic base of the dish. Provides complex carbohydrates for lasting energy.",
+    "macroBaseExamples": "E.g. pasta, rice, bread, couscous, quinoa, potatoes, farro, barley, polenta",
+    "macroProtein": "Protein",
+    "macroProteinDesc": "Essential for muscles and satiety. Every meal should have a protein source.",
+    "macroProteinExamples": "E.g. chicken, fish, eggs, legumes, tofu, cheese, seitan, tempeh",
+    "macroVegetable": "Vegetables",
+    "macroVegetableDesc": "Vitamins, minerals, and fiber. They make the dish complete and colorful!",
+    "macroVegetableExamples": "E.g. zucchini, tomatoes, spinach, peppers, broccoli, carrots, eggplant"
   },
   "shopping": {
     "missingTitle": "Ingredients to buy",
@@ -324,8 +341,16 @@
     "history": "History",
     "settings": "Settings"
   },
+  "splash": {
+    "subtitle": "Your personal sous-chef"
+  },
+  "calendar": {
+    "confirmTitle": "Add to calendar",
+    "confirmSubtitle": "Choose if it's for lunch or dinner",
+    "savedSuccess": "Added to calendar!"
+  },
   "errors": {
-    "saveFailed": "Save failed. Check your connection and try again.",
+    "saveFailed": "Save failed. Please try again.",
     "fridgeSaveFailed": "Couldn't save fridge. Please try again.",
     "generic": "Something went wrong. Please try again."
   },

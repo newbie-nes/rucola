@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import {
-  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, Trash2, Shield, MessageCircle, Send, Star
+  Globe, Bell, Calendar, User, UtensilsCrossed, LogOut, ChevronRight, ChevronDown, Trash2, Shield, MessageCircle, Send, Star, Info
 } from 'lucide-react'
 import PageInfoBox from '../components/PageInfoBox'
 
@@ -19,7 +19,14 @@ export default function Settings() {
   const [appHovered, setAppHovered] = useState(0)
   const [appComment, setAppComment] = useState('')
   const [appFbSubmitted, setAppFbSubmitted] = useState(false)
+  const [comingSoon, setComingSoon] = useState(false)
+  const [showMacroInfo, setShowMacroInfo] = useState(false)
   const lang = i18n.language?.startsWith('it') ? 'it' : 'en'
+
+  function showComingSoon() {
+    setComingSoon(true)
+    setTimeout(() => setComingSoon(false), 2500)
+  }
 
   async function submitAppFeedback() {
     if (appRating === 0 && !appComment.trim()) return
@@ -70,6 +77,13 @@ export default function Settings() {
         dismissKey="settings"
       />
 
+      {/* Coming soon toast */}
+      {comingSoon && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-5 py-3 rounded-2xl shadow-lg text-sm font-medium animate-in fade-in slide-in-from-top">
+          {t('settings.comingSoon')}
+        </div>
+      )}
+
       {/* Profile card */}
       <div className="card mb-6 flex items-center gap-4">
         <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
@@ -95,14 +109,14 @@ export default function Settings() {
           icon={<Bell size={20} />}
           label={t('settings.notifications')}
           value={t('settings.notConnected')}
-          onClick={() => {}}
+          onClick={showComingSoon}
         />
 
         <SettingRow
           icon={<Calendar size={20} />}
           label={t('settings.googleCalendar')}
           value={t('settings.notConnected')}
-          onClick={() => {}}
+          onClick={showComingSoon}
         />
 
         <SettingRow
@@ -115,7 +129,7 @@ export default function Settings() {
         <SettingRow
           icon={<User size={20} />}
           label={t('settings.editProfile')}
-          onClick={() => {}}
+          onClick={() => navigate('/onboarding')}
         />
       </div>
 
@@ -131,6 +145,53 @@ export default function Settings() {
         <ChevronRight size={18} className="text-warm-muted" />
       </Link>
 
+      {/* Macro info card */}
+      <button
+        onClick={() => setShowMacroInfo(!showMacroInfo)}
+        className="w-full mt-2 card flex items-center gap-3 text-left py-4"
+      >
+        <div className="text-primary"><Info size={20} /></div>
+        <div className="flex-1">
+          <p className="font-medium">{t('settings.macroInfoTitle')}</p>
+          <p className="text-sm text-warm-muted">{t('settings.macroInfoSubtitle')}</p>
+        </div>
+        <ChevronDown size={18} className={`text-warm-muted transition-transform ${showMacroInfo ? 'rotate-180' : ''}`} />
+      </button>
+
+      {showMacroInfo && (
+        <div className="mt-2 space-y-2">
+          {/* Base */}
+          <div className="card border-l-4 border-amber-400 bg-gradient-to-r from-amber-50 to-white">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xl">🌾</span>
+              <p className="font-bold text-amber-700">{t('settings.macroBase')}</p>
+            </div>
+            <p className="text-sm text-warm-text mb-1">{t('settings.macroBaseDesc')}</p>
+            <p className="text-xs text-amber-600 italic">{t('settings.macroBaseExamples')}</p>
+          </div>
+
+          {/* Proteine */}
+          <div className="card border-l-4 border-red-400 bg-gradient-to-r from-red-50 to-white">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xl">🥩</span>
+              <p className="font-bold text-red-700">{t('settings.macroProtein')}</p>
+            </div>
+            <p className="text-sm text-warm-text mb-1">{t('settings.macroProteinDesc')}</p>
+            <p className="text-xs text-red-600 italic">{t('settings.macroProteinExamples')}</p>
+          </div>
+
+          {/* Verdure */}
+          <div className="card border-l-4 border-green-400 bg-gradient-to-r from-green-50 to-white">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xl">🥬</span>
+              <p className="font-bold text-green-700">{t('settings.macroVegetable')}</p>
+            </div>
+            <p className="text-sm text-warm-text mb-1">{t('settings.macroVegetableDesc')}</p>
+            <p className="text-xs text-green-600 italic">{t('settings.macroVegetableExamples')}</p>
+          </div>
+        </div>
+      )}
+
       {/* App Feedback */}
       <button
         onClick={() => setShowFeedback(!showFeedback)}
@@ -138,8 +199,8 @@ export default function Settings() {
       >
         <div className="text-primary"><MessageCircle size={20} /></div>
         <div className="flex-1">
-          <p className="font-medium">{lang === 'it' ? 'Lascia un feedback' : 'Leave feedback'}</p>
-          <p className="text-sm text-warm-muted">{lang === 'it' ? 'Aiutaci a migliorare Rucola' : 'Help us improve Rucola'}</p>
+          <p className="font-medium">{t('settings.feedback')}</p>
+          <p className="text-sm text-warm-muted">{t('settings.feedbackSubtitle')}</p>
         </div>
         <ChevronRight size={18} className={`text-warm-muted transition-transform ${showFeedback ? 'rotate-90' : ''}`} />
       </button>

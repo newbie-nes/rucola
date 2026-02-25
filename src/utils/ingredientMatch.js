@@ -199,8 +199,19 @@ export function normalizeIngredient(text) {
 }
 
 /**
+ * Word-boundary aware match: checks if `keyword` appears as a whole word in `text`.
+ * For short keywords (<=3 chars), requires exact equality instead.
+ */
+function wordBoundaryMatch(text, keyword) {
+  if (!text || !keyword) return false
+  if (keyword.length <= 3) return text === keyword
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(^|\\s|\\b)${escaped}(\\s|\\b|$)`, 'i').test(text)
+}
+
+/**
  * Check if a fridge item matches a key ingredient (base/vegetable/protein)
- * Uses synonym lookup + substring matching
+ * Uses synonym lookup + word-boundary matching (avoids false positives like pepe→peperoni)
  */
 export function matchesKeyIngredient(fridgeItem, keyIngredient) {
   const fi = fridgeItem.toLowerCase().trim()
@@ -208,19 +219,20 @@ export function matchesKeyIngredient(fridgeItem, keyIngredient) {
 
   // Direct match
   if (fi === key) return true
-  if (fi.includes(key) || key.includes(fi)) return true
+  // Word-boundary substring match (avoids "pepe" matching "peperoni")
+  if (wordBoundaryMatch(fi, key) || wordBoundaryMatch(key, fi)) return true
 
   // Normalize fridge item and check
   const normalizedFi = normalizeIngredient(fi)
-  if (normalizedFi === key || normalizedFi.includes(key) || key.includes(normalizedFi)) return true
+  if (normalizedFi === key || wordBoundaryMatch(normalizedFi, key) || wordBoundaryMatch(key, normalizedFi)) return true
 
   // Check synonyms: does the fridge item map to the same canonical key?
   const fiSynonym = SYNONYMS[fi] || SYNONYMS[normalizedFi]
   if (fiSynonym && fiSynonym === key) return true
 
-  // Check if any synonym of the fridge item substring-matches
+  // Check if any synonym of the fridge item matches
   for (const [term, canonical] of Object.entries(SYNONYMS)) {
-    if (canonical === key && (fi.includes(term) || term.includes(fi) || normalizedFi.includes(term) || term.includes(normalizedFi))) {
+    if (canonical === key && (fi === term || normalizedFi === term || wordBoundaryMatch(fi, term) || wordBoundaryMatch(term, fi))) {
       return true
     }
   }
@@ -236,13 +248,15 @@ export function ingredientsMatch(fridgeItem, recipeIngredientText) {
   const fi = fridgeItem.toLowerCase().trim()
   const ri = recipeIngredientText.toLowerCase().trim()
 
-  // Direct substring match
-  if (fi.includes(ri) || ri.includes(fi)) return true
+  // Direct exact match
+  if (fi === ri) return true
+  // Word-boundary match to avoid false positives
+  if (wordBoundaryMatch(ri, fi) || wordBoundaryMatch(fi, ri)) return true
 
   // Normalize both
   const normalizedFi = normalizeIngredient(fi)
   const normalizedRi = normalizeIngredient(ri)
-  if (normalizedFi && normalizedRi && (normalizedFi.includes(normalizedRi) || normalizedRi.includes(normalizedFi))) return true
+  if (normalizedFi && normalizedRi && (normalizedFi === normalizedRi || wordBoundaryMatch(normalizedRi, normalizedFi) || wordBoundaryMatch(normalizedFi, normalizedRi))) return true
 
   // Synonym-based: resolve both to canonical keys and compare
   const fiCanonical = SYNONYMS[fi] || SYNONYMS[normalizedFi] || fi
@@ -250,18 +264,18 @@ export function ingredientsMatch(fridgeItem, recipeIngredientText) {
 
   if (fiCanonical === riCanonical) return true
 
-  // Check if fridge item's canonical matches inside recipe text or vice versa
-  if (ri.includes(fiCanonical) || fiCanonical.includes(normalizedRi)) return true
-  if (fi.includes(riCanonical) || riCanonical.includes(normalizedFi)) return true
+  // Check if fridge item's canonical matches inside recipe text or vice versa (word-boundary)
+  if (wordBoundaryMatch(ri, fiCanonical) || wordBoundaryMatch(fiCanonical, normalizedRi)) return true
+  if (wordBoundaryMatch(fi, riCanonical) || wordBoundaryMatch(riCanonical, normalizedFi)) return true
 
   // Word-level synonym matching: split both into words, resolve each via SYNONYMS
-  const fiWords = normalizedFi.split(/\s+/).filter(w => w.length > 2)
-  const riWords = normalizedRi.split(/\s+/).filter(w => w.length > 2)
+  const fiWords = normalizedFi.split(/\s+/).filter(w => w.length > 3)
+  const riWords = normalizedRi.split(/\s+/).filter(w => w.length > 3)
   for (const fw of fiWords) {
     const fwCanonical = SYNONYMS[fw] || fw
     for (const rw of riWords) {
       const rwCanonical = SYNONYMS[rw] || rw
-      if (fwCanonical === rwCanonical && fwCanonical.length > 2) return true
+      if (fwCanonical === rwCanonical && fwCanonical.length > 3) return true
     }
   }
 

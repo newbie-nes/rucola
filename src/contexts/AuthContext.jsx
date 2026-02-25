@@ -61,18 +61,27 @@ export function AuthProvider({ children }) {
     // Set display name
     await updateProfile(firebaseUser, { displayName })
 
-    // Create profile in Firestore
-    const profile = {
+    // Create profile in Firestore (serverTimestamp for Firestore, ISO string for local state)
+    const now = new Date().toISOString()
+    const firestoreProfile = {
       displayName,
       email,
       createdAt: serverTimestamp(),
-      gdprConsentedAt: gdprConsentedAt || new Date().toISOString(),
+      gdprConsentedAt: gdprConsentedAt || now,
       onboardingComplete: false,
       mealHistory: {}
     }
-    await setDoc(doc(db, 'users', firebaseUser.uid), profile)
+    await setDoc(doc(db, 'users', firebaseUser.uid), firestoreProfile)
 
-    setUserProfile(profile)
+    const localProfile = {
+      displayName,
+      email,
+      createdAt: now,
+      gdprConsentedAt: gdprConsentedAt || now,
+      onboardingComplete: false,
+      mealHistory: {}
+    }
+    setUserProfile(localProfile)
     return firebaseUser
   }
 
@@ -89,16 +98,26 @@ export function AuthProvider({ children }) {
     // Check if profile exists in Firestore, if not create it
     const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
     if (!snap.exists()) {
-      const profile = {
+      const now = new Date().toISOString()
+      const firestoreProfile = {
         displayName: firebaseUser.displayName || '',
         email: firebaseUser.email,
         createdAt: serverTimestamp(),
-        gdprConsentedAt: new Date().toISOString(),
+        gdprConsentedAt: now,
         onboardingComplete: false,
         mealHistory: {}
       }
-      await setDoc(doc(db, 'users', firebaseUser.uid), profile)
-      setUserProfile(profile)
+      await setDoc(doc(db, 'users', firebaseUser.uid), firestoreProfile)
+
+      const localProfile = {
+        displayName: firebaseUser.displayName || '',
+        email: firebaseUser.email,
+        createdAt: now,
+        gdprConsentedAt: now,
+        onboardingComplete: false,
+        mealHistory: {}
+      }
+      setUserProfile(localProfile)
     }
     // Otherwise onAuthStateChanged will load the profile
 
@@ -146,11 +165,28 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // Save a meal to Firestore (replaces localStorage meal history)
-  async function saveMeal(dateKey, mealData) {
+  /**
+   * Migrate old meal entry format to new { lunch, dinner } format.
+   * Old: { recipeId, recipeName, emoji, type } directly under dateKey
+   * New: { lunch: { recipeId, recipeName, emoji }, dinner: { ... } }
+   */
+  function migrateMealEntry(entry) {
+    if (!entry) return null
+    // Already new format (has lunch or dinner key)
+    if (entry.lunch || entry.dinner) return entry
+    // Old format — migrate based on type field
+    const mealType = entry.type === 'dinner' ? 'dinner' : 'lunch'
+    const { type, ...mealData } = entry
+    return { [mealType]: mealData }
+  }
+
+  // Save a meal to Firestore with mealType separation (lunch/dinner)
+  async function saveMeal(dateKey, mealType, mealData) {
     if (!user) throw new Error('No authenticated user')
     const previousHistory = userProfile?.mealHistory || {}
-    const updatedHistory = { ...previousHistory, [dateKey]: mealData }
+    const existingEntry = migrateMealEntry(previousHistory[dateKey]) || {}
+    const updatedEntry = { ...existingEntry, [mealType]: mealData }
+    const updatedHistory = { ...previousHistory, [dateKey]: updatedEntry }
     setUserProfile(prev => ({ ...prev, mealHistory: updatedHistory }))
     try {
       await setDoc(doc(db, 'users', user.uid), {
@@ -159,6 +195,35 @@ export function AuthProvider({ children }) {
       }, { merge: true })
     } catch (e) {
       console.error('Firestore meal save failed:', e)
+      setUserProfile(prev => ({ ...prev, mealHistory: previousHistory }))
+      throw e
+    }
+  }
+
+  // Delete a meal from a specific date and type (optimistic update + rollback)
+  async function deleteMeal(dateKey, mealType) {
+    if (!user) throw new Error('No authenticated user')
+    const previousHistory = userProfile?.mealHistory || {}
+    const existingEntry = migrateMealEntry(previousHistory[dateKey]) || {}
+    const updatedEntry = { ...existingEntry }
+    delete updatedEntry[mealType]
+
+    const updatedHistory = { ...previousHistory }
+    // If both slots are empty, remove the date key entirely
+    if (!updatedEntry.lunch && !updatedEntry.dinner) {
+      delete updatedHistory[dateKey]
+    } else {
+      updatedHistory[dateKey] = updatedEntry
+    }
+
+    setUserProfile(prev => ({ ...prev, mealHistory: updatedHistory }))
+    try {
+      await setDoc(doc(db, 'users', user.uid), {
+        mealHistory: updatedHistory,
+        updatedAt: serverTimestamp()
+      }, { merge: true })
+    } catch (e) {
+      console.error('Firestore meal delete failed:', e)
       setUserProfile(prev => ({ ...prev, mealHistory: previousHistory }))
       throw e
     }
@@ -175,7 +240,9 @@ export function AuthProvider({ children }) {
     deleteAccount,
     resetPassword,
     updateUserProfile,
-    saveMeal
+    saveMeal,
+    deleteMeal,
+    migrateMealEntry
   }
 
   return (
