@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [lunchboxFilter, setLunchboxFilter] = useState(() => {
     return sessionStorage.getItem('rucola_dashboard_lunchboxFilter') === 'true'
   })
+  const [highProteinFilter, setHighProteinFilter] = useState(() => {
+    return sessionStorage.getItem('rucola_dashboard_highProteinFilter') === 'true'
+  })
 
   // Inline feedback state
   const [feedbackRating, setFeedbackRating] = useState(0)
@@ -40,6 +43,10 @@ export default function Dashboard() {
   useEffect(() => {
     sessionStorage.setItem('rucola_dashboard_lunchboxFilter', String(lunchboxFilter))
   }, [lunchboxFilter])
+
+  useEffect(() => {
+    sessionStorage.setItem('rucola_dashboard_highProteinFilter', String(highProteinFilter))
+  }, [highProteinFilter])
 
   const name = user?.displayName?.split(' ')[0] || ''
 
@@ -76,7 +83,8 @@ export default function Dashboard() {
     const fridgeItems = [...fridge.base, ...fridge.vegetable, ...fridge.protein, ...(fridge.spice || []), ...(fridge.altro || [])]
     const yesterdayId = yesterdayMeal?.recipeId || null
     const all = getRecipesForUser(userProfile, fridgeItems, yesterdayId)
-    const filtered = lunchboxFilter ? all.filter(r => r.tags && r.tags.includes('lunchbox')) : all
+    let filtered = lunchboxFilter ? all.filter(r => r.tags && r.tags.includes('lunchbox')) : all
+    if (highProteinFilter) filtered = filtered.filter(r => r.tags && r.tags.includes('highProtein'))
 
     // Seed deterministico: stesse ricette finche' non cambia giorno/utente/refreshKey
     const seed = hashStringToInt(`${toLocalDateKey()}_${user?.uid || 'anon'}_${refreshKey}`)
@@ -95,7 +103,7 @@ export default function Dashboard() {
     ]
 
     return prioritized.slice(0, 3)
-  }, [userProfile, refreshKey, yesterdayMeal, lunchboxFilter, user])
+  }, [userProfile, refreshKey, yesterdayMeal, lunchboxFilter, highProteinFilter, user])
 
   const tip = useMemo(() => {
     const msgs = [
@@ -270,8 +278,8 @@ export default function Dashboard() {
         </button>
       )}
 
-      {/* Lunchbox filter */}
-      <div className="flex gap-2 mb-4">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2 mb-4">
         <button
           onClick={() => setLunchboxFilter(false)}
           className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
@@ -291,6 +299,16 @@ export default function Dashboard() {
           }`}
         >
           🍱 {t('dashboard.lunchboxFilter')}
+        </button>
+        <button
+          onClick={() => setHighProteinFilter(prev => !prev)}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+            highProteinFilter
+              ? 'bg-primary text-white shadow-md'
+              : 'bg-gray-100 text-warm-muted hover:bg-gray-200'
+          }`}
+        >
+          💪 {t('dashboard.highProteinFilter')}
         </button>
       </div>
 

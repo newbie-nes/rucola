@@ -48,6 +48,7 @@ export default function Fridge() {
   )
   const [saveError, setSaveError] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
 
   const fridge = localFridge
 
@@ -144,7 +145,7 @@ export default function Fridge() {
           <p className="text-warm-muted text-sm">{t('fridge.subtitle')}</p>
         </div>
         {totalItems > 0 && (
-          <button onClick={clearAll} className="text-danger text-sm flex items-center gap-1">
+          <button onClick={() => setShowClearConfirm(true)} className="text-danger text-sm flex items-center gap-1">
             <Trash2 size={14} /> {t('fridge.clearAll')}
           </button>
         )}
@@ -296,6 +297,32 @@ export default function Fridge() {
               </div>
             )
           ))}
+        </div>
+      )}
+
+      {/* Clear all confirmation modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowClearConfirm(false)}>
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-2">🗑️ {t('fridge.clearAllTitle', 'Svuota frigo?')}</h3>
+            <p className="text-warm-muted text-sm mb-4">
+              {t('fridge.clearAllConfirm', 'Tutti gli ingredienti verranno rimossi. Questa azione non può essere annullata.')}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 px-4 py-2 rounded-xl bg-gray-100 text-warm-dark font-semibold"
+              >
+                {t('common.cancel', 'Annulla')}
+              </button>
+              <button
+                onClick={() => { setShowClearConfirm(false); clearAll() }}
+                className="flex-1 px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
+              >
+                {t('fridge.clearAll')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -100,6 +100,7 @@
     "yesterdayAte": "Ieri hai mangiato {{meal}} — oggi variamo!",
     "fridgeFirst": "Priorità agli ingredienti nel tuo frigo",
     "lunchboxFilter": "Pranzo al sacco",
+    "highProteinFilter": "Alto in proteine",
     "lunchboxHint": "Ricette portabili per il lavoro",
     "allRecipes": "Tutte",
     "goShopping": "Tempo di fare la spesa!",
@@ -125,6 +126,8 @@
     "smartPlaceholder": "Scrivi un ingrediente...",
     "empty": "Il frigo è vuoto! Inizia ad aggiungere ingredienti",
     "clearAll": "Svuota tutto",
+    "clearAllTitle": "Svuota frigo?",
+    "clearAllConfirm": "Tutti gli ingredienti verranno rimossi. Questa azione non può essere annullata.",
     "items": {
       "pasta": "Pasta",
       "rice": "Riso",

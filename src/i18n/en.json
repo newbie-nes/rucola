@@ -100,6 +100,7 @@
     "yesterdayAte": "You had {{meal}} yesterday — let's switch it up!",
     "fridgeFirst": "Prioritizing your fridge ingredients",
     "lunchboxFilter": "Lunchbox",
+    "highProteinFilter": "High protein",
     "lunchboxHint": "Portable recipes for work",
     "allRecipes": "All",
     "goShopping": "Time to go shopping!",
@@ -125,6 +126,8 @@
     "smartPlaceholder": "Type an ingredient...",
     "empty": "Your fridge is empty! Start adding ingredients",
     "clearAll": "Clear all",
+    "clearAllTitle": "Clear fridge?",
+    "clearAllConfirm": "All ingredients will be removed. This action cannot be undone.",
     "items": {
       "pasta": "Pasta",
       "rice": "Rice",
