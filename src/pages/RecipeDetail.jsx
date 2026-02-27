@@ -5,9 +5,10 @@ import { useAuth } from '../contexts/AuthContext'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import recipes from '../data/recipes'
-import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin, Star, Send, X, Sun, Moon } from 'lucide-react'
+import { ArrowLeft, Clock, Flame, CalendarPlus, Zap, MapPin, Star, Send, X, Sun, Moon, Timer } from 'lucide-react'
 import { toLocalDateKey } from '../utils/dateHelpers'
 import { matchesKeyIngredient, ingredientsMatch } from '../utils/ingredientMatch'
+import { getIngredientName, getIngredientQuantity, getStepText, getStepTime } from '../utils/recipeHelpers'
 
 const FOOD_EMOJIS = {
   pasta: '🍝', rice: '🍚', bread: '🍞', couscous: '🫓', quinoa: '🌾', potatoes: '🥔',
@@ -134,10 +135,15 @@ export default function RecipeDetail() {
   }
 
   // Classify all ingredients, keeping original order
-  const classifiedIngredients = recipe.allIngredients[lang].map(ing => ({
-    text: ing,
-    status: getIngredientStatus(ing)
-  }))
+  const classifiedIngredients = recipe.allIngredients[lang].map(ing => {
+    const name = getIngredientName(ing)
+    const quantity = getIngredientQuantity(ing)
+    return {
+      name,
+      quantity,
+      status: getIngredientStatus(name)
+    }
+  })
 
   // Collect ALL missing ingredients (not just key ones) for shopping card
   const allMissingIngredients = classifiedIngredients.filter(ing => ing.status === 'missing')
@@ -340,12 +346,13 @@ export default function RecipeDetail() {
                   </span>
                 )}
 
-                {/* Ingredient text */}
+                {/* Ingredient text + quantity */}
                 <span className={`text-sm flex-1 ${
                   ing.status === 'missing' ? 'text-orange-800 font-semibold' :
                   ing.status === 'inFridge' ? 'text-green-800' : 'text-warm-muted'
                 }`}>
-                  {ing.text}
+                  {ing.quantity && <span className="font-bold mr-1">{ing.quantity}</span>}
+                  {ing.name}
                 </span>
 
                 {/* Status label */}
@@ -373,7 +380,7 @@ export default function RecipeDetail() {
                   key={i}
                   className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200 font-semibold"
                 >
-                  🛒 {ing.text}
+                  🛒 {ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name}
                 </span>
               ))}
             </div>
@@ -401,16 +408,25 @@ export default function RecipeDetail() {
           <div className="relative">
             <div className="absolute left-[18px] top-5 bottom-5 w-0.5 bg-gradient-to-b from-primary/30 via-primary/20 to-primary/5 rounded-full" />
             <div className="space-y-1">
-              {recipe.steps[lang].map((step, i) => (
-                <div key={i} className="relative flex gap-4 py-3">
-                  <div className="relative z-10 w-9 h-9 bg-gradient-to-br from-primary to-primary-dark text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0 shadow-md">
-                    {i + 1}
+              {recipe.steps[lang].map((step, i) => {
+                const text = getStepText(step)
+                const time = getStepTime(step)
+                return (
+                  <div key={i} className="relative flex gap-4 py-3">
+                    <div className="relative z-10 w-9 h-9 bg-gradient-to-br from-primary to-primary-dark text-white rounded-full flex items-center justify-center text-sm font-bold shrink-0 shadow-md">
+                      {i + 1}
+                    </div>
+                    <div className="flex-1 bg-warm-bg rounded-2xl px-4 py-3 border border-gray-100">
+                      <p className="text-sm text-warm-text leading-relaxed">{text}</p>
+                      {time && (
+                        <span className="inline-flex items-center gap-1 mt-2 text-[11px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          <Timer size={10} /> {time}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1 bg-warm-bg rounded-2xl px-4 py-3 border border-gray-100">
-                    <p className="text-sm text-warm-text leading-relaxed">{step}</p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
